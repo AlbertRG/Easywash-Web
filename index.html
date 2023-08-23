@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>H2O Autolavado</title>
+    <link href="CSS/style.css" rel="stylesheet" />
+    <link href="CSS/navbar.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(function () {
+        $(".toggle").on("click", function () {
+          if ($(".item").hasClass("active")) {
+            $(".item").removeClass("active");
+          } else {
+            $(".item").addClass("active");
+          }
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <ul class="menu">
+          <li class="logo_img">
+            <a href="index.html"><img src="Images/logo.png" width="70px" /></a>
+          </li>
+          <li class="logo"><a href="#">H2O Detallado Automotriz</a></li>
+          <li class="item"><a href="#">Registro</a></li>
+          <li class="item"><a href="#">Productos</a></li>
+          <li class="item"><a href="#">Servicios</a></li>
+          <li class="item"><a href="#">Servicios</a></li>
+          <li class="item button"><a href="#">Salir</a></li>
+          <li class="toggle"><span class="bars"></span></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+
+      <div class="news">
+
+        
+
+
+      </div>
+
+      <div class="wrapper">
+        <div class="registration_form">
+          <div class="title">Registrar Servicio</div>
+
+          <form>
+            <div class="form_wrap">
+              <div class="input_grp">
+                <div class="input_wrap">
+                  <label for="fname">Nombre</label>
+                  <input type="text" id="fname" />
+                </div>
+                <div class="input_wrap">
+                  <label for="lname">Apellido</label>
+                  <input type="text" id="lname" />
+                </div>
+              </div>
+              <div class="input_wrap">
+                <label for="email">Telefono</label>
+                <input type="text" id="email" />
+              </div>
+              <div class="input_wrap">
+                <label>Servicio</label>
+                <ul>
+                  <li>
+                    <label class="radio_wrap">
+                      <input
+                        type="radio"
+                        name="servicio"
+                        value="Lavado"
+                        class="input_radio"
+                        checked
+                      />
+                      <span>Lavado</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="radio_wrap">
+                      <input
+                        type="radio"
+                        name="servicio"
+                        value="Otro"
+                        class="input_radio"
+                      />
+                      <span>Otro</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+              <div class="input_wrap">
+                <label for="city">Placas</label>
+                <input type="text" id="city" />
+              </div>
+              <div class="input_wrap">
+                <label for="country">Total</label>
+                <input type="text" id="country" />
+              </div>
+              <div class="input_wrap">
+                <input type="submit" value="Registrar" class="submit_btn" />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer_address">
+        <i class="bx bxs-map footer_icon"></i>
+        <h3 class="footer_text">
+          Av Valle de Atemajac 2316, Jardines del Valle, 45138 Zapopan, Jal.
+        </h3>
+      </div>
+
+      <a href="#" style="text-decoration: none" rel="noopener noreferrer"
+        ><div class="footer_support">
+          <i class="bx bx-support footer_icon"></i>
+          <h3 class="footer_text">Soporte</h3>
+        </div>
+      </a>
+    </footer>
+  </body>
+  <!-- TODO: Aprender HTML-->
+  <!-- <p>Enlace <a href="https://google.com" target="_blank" rel="noopener noreferrer">CLICK</a></p> -->
+</html>
