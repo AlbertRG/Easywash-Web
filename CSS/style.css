@@ -13,13 +13,33 @@ body {
   font-family: "Roboto Condensed", sans-serif;
 }
 
-main {
+main,body,footer {
   background: #84889c;
 }
 
-/*                        News                      */
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+body{
+  padding-bottom: 81px;
+  min-height: calc(100% - 81px);
+  position: relative;
+}
 
 
+
+/*                        Banner                      */
+
+.banner{
+  height: 250px;
+  width: 100%;
+  background-color: #03c04a;
+  margin-top: 25px;;
+}
 
 /*                        Form                     */
 .wrapper {
@@ -33,7 +53,7 @@ main {
 .registration_form {
   background: var(--slate);
   padding: 25px;
-  border-radius: 5px;
+  border-radius: 12px 12px 0 0;
   width: 400px;
 }
 
@@ -138,6 +158,16 @@ main {
 }
 
 /*                        Footer                      */
+footer {
+  color: white;
+  background-color: #1A1A1A;
+  width: 100%;
+  height: 81px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
 footer {
   background: var(--slate);
   color: white;
