@@ -62,7 +62,7 @@
             
           <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
           {% endwith %}
-          <li class="item button"><a href="#">Salir</a></li>
+          <li class="item button"><a href="{% url 'logout' %}">Salir</a></li>
           <li class="toggle"><span class="bars"></span></li>
         </ul>
       </nav>
