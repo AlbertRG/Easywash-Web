@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html lang="es">
@@ -6,8 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>H2O Autolavado</title>
-    <link href="../CSS/style.css" rel="stylesheet" />
-    <link href="../CSS/navbar.css" rel="stylesheet" />
+    <link href="{% static 'css/style.css'%}" rel="stylesheet" />
+    <link href="{% static 'css/navbar.css'%} " rel="stylesheet" />
+    <link href="{% static 'css/productos.css'%} " rel="stylesheet" />
+    <link href="{% static 'css/table.css'%} " rel="stylesheet" />
+
     <link
       href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css"
       rel="stylesheet"
@@ -18,6 +22,12 @@
       href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      .selected{
+        background-color: red;
+      }
+    </style>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
       integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
@@ -41,21 +51,27 @@
       <nav>
         <ul class="menu">
           <li class="logo_img">
-            <a href="../index.html"
-              ><img src="../Images/logo.png" width="70px"
+            <a href="{% url 'home' %}"
+              ><img src="{% static 'Images/logo.png'%}" width="70px"
             /></a>
           </li>
-          <li class="logo"><a href="../index.html">H2O Detallado Automotriz</a></li>
-          <li class="item"><a href="../index.html">Inicio</a></li>
-          <li class="item"><a href="./ventas.html">Ventas</a></li>
-          <li class="item"><a href="./inventario.html">Inventario</a></li>
+          {% with request.resolver_match.view_name as view_name %}
+          <li class="logo "><a href="{% url 'home' %}">H2O Detallado Automotriz</a></li>
+          <li class="item {% if view_name == 'home' %} selected{% endif %}"><a href="{% url 'home' %}">Inicio</a></li>
+          <li class="item {% if view_name == 'ventas' %} selected{% endif %}"><a href="{% url 'ventas' %}">Ventas</a></li>
+            
+          <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
+          {% endwith %}
           <li class="item button"><a href="#">Salir</a></li>
           <li class="toggle"><span class="bars"></span></li>
         </ul>
       </nav>
     </header>
 
-    <main></main>
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
 
     <footer>
       <div class="footer_address">

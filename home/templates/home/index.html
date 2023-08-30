@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="banner"></div>
+
+<div class="wrapper">
+  <div class="registration_form">
+    <div class="title">Registrar Servicio</div>
+
+    <form>
+      <div class="form_wrap">
+        <div class="input_grp">
+          <div class="input_wrap">
+            <label for="fname">Nombre</label>
+            <input type="text" id="fname" />
+          </div>
+          <div class="input_wrap">
+            <label for="lname">Apellido</label>
+            <input type="text" id="lname" />
+          </div>
+        </div>
+        <div class="input_wrap">
+          <label for="email">Telefono</label>
+          <input type="text" id="email" />
+        </div>
+        <div class="input_wrap">
+          <label>Servicio</label>
+          <ul>
+            <li>
+              <label class="radio_wrap">
+                <input
+                  type="radio"
+                  name="servicio"
+                  value="Lavado"
+                  class="input_radio"
+                  checked
+                />
+                <span>Lavado</span>
+              </label>
+            </li>
+            <li>
+              <label class="radio_wrap">
+                <input
+                  type="radio"
+                  name="servicio"
+                  value="Otro"
+                  class="input_radio"
+                />
+                <span>Otro</span>
+              </label>
+            </li>
+          </ul>
+        </div>
+        <div class="input_wrap">
+          <label for="city">Placas</label>
+          <input type="text" id="city" />
+        </div>
+        <div class="input_wrap">
+          <label for="country">Total</label>
+          <input type="text" id="country" />
+        </div>
+        <div class="input_wrap">
+          <input type="submit" value="Registrar" class="submit_btn" />
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
