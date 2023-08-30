@@ -17,9 +17,10 @@ class SignupView(CreateView):
   template_name = 'home/register.html'
   #success_url = '/smart/notes'
   
- # def get(self, request, *args, **kwargs):
-  #  if self.request.user.is_authenticated:
-   ##return super().get(request, *args, **kwargs)
+  def get(self, request, *args, **kwargs):
+    if self.request.user.is_authenticated:
+      return redirect('home/index.html')
+    return super().get(request, *args, **kwargs)
 
 
 class LogoutInterfaceView(LogoutView):
@@ -31,8 +32,9 @@ class LoginInterfaceView(LoginView):
   template_name = 'home/login.html'
   
   
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
   template_name = 'home/index.html'
+  login_url = 'login'
   #extra_context = {'today': datetime.today()}
 
 class AuthorizedView(LoginRequiredMixin,TemplateView):
