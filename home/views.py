@@ -15,7 +15,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import *
 from .helpers import send_forget_password_mail
-
+#2af
+from django.contrib.auth.hashers import make_password
+import random
+from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login
+from django.views.generic.base import RedirectView
+from django.contrib import messages
 class SignupView(CreateView):
   form_class = UserCreationForm
   template_name = 'home/register.html'
@@ -29,17 +35,42 @@ class SignupView(CreateView):
 
 class LogoutInterfaceView(LogoutView):
   template_name = 'home/logout.html'
+  
+  def get(self, request, *args, **kwargs):
+    if self.request.user.is_authenticated:
+      return redirect('home/index.html')
+    return super().get(request, *args, **kwargs)
 
 
 # Create your views here.
 class LoginInterfaceView(LoginView):
   template_name = 'home/login.html'
   
+def LoginInterface(request):
+ if request.user.is_authenticated:
+   return redirect('home')
+ if request.method == 'POST':
+   username=request.POST["username"]
+   user_obj = User.objects.get(username = username)
+   password=request.POST["password"]
+   request.session["username"]=username
+   request.session["password"]=password
+   request.session["email"]=user_obj.email
+   user = authenticate(request, username=username, password=password)
+   if user is not None:
+     send_otp(request)
+     return render(request,'home/otp.html',{"email":user_obj.email})
+   else:
+     # Lógica personalizada para manejar credenciales incorrectas
+     messages.error(request,"Nombre de usuario o contraseña incorrectos.")
+
+ return render(request, 'home/login.html')
+  
   
 class HomeView(LoginRequiredMixin, TemplateView):
   template_name = 'home/index.html'
-  login_url = 'login'
-  #extra_context = {'today': datetime.today()}
+  login_url = 'loginaccount'
+  #extra_context = {'today': datime.today()}
 
 #class AuthorizedView(LoginRequiredMixin,TemplateView):
 #  template_name = 'home/authorized.html'
@@ -133,3 +164,47 @@ def Register(request):
             print(e)
 
     return render(request , 'home/register.html')
+  
+  #2af
+  
+def signin_verification(request):
+  if User.is_authenticated:
+      return redirect('home/index.html')
+  if request.method=="POST":
+    username=request.POST["username"]
+    user_obj = User.objects.get(username = username)
+    password=request.POST["password"]
+    request.session["username"]=username
+    request.session["password"]=password
+    request.session["email"]=user_obj.email
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+      send_otp(request)
+      return render(request,'otp.html',{"email":user_obj.email})
+    else:
+      messages.info(request,"Credenciales incorrectas")
+      return redirect("signin_verification")
+          
+          
+def send_otp(request):
+    s=""
+    for x in range(0,6):
+        s+=str(random.randint(0,9))
+    request.session["otp"]=s
+    send_mail("Tu código de inicio de sesión de dos factores","Tu código de inicio de sesión de dos factores es "+s,'easywashgdl@gmail.com',[request.session['email']],fail_silently=False)
+    return render(request,"home/otp.html")
+
+
+def  otp_verification(request):
+    if  request.method=='POST':
+        otp_=request.POST.get("otp")
+    if otp_ == request.session["otp"]:
+        username = request.session['username']
+        password = request.session['password']
+        user = authenticate(request, username=username, password=password)
+        login(request, user)
+        #User.is_active=True
+        return redirect('home')
+    else:
+        messages.error(request,"El código no coincide")
+        return render(request,'home/otp.html')
