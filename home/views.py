@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import *
 from .helpers import send_forget_password_mail
+import re
 #2af
 from django.contrib.auth.hashers import make_password
 import random
@@ -76,11 +77,17 @@ class HomeView(LoginRequiredMixin, TemplateView):
 #  template_name = 'home/authorized.html'
 #  login_url = '/admin'
 def ChangePassword(request , token):
+    print('Request:    ')
+  
+    if request.user.is_authenticated:
+      return redirect('home')
     context = {}
     
     
     try:
         profile_obj = Profile.objects.filter(forget_password_token = token).first()
+        if not profile_obj:
+           return redirect('loginaccount')
         context = {'user_id' : profile_obj.user.id}
         
         if request.method == 'POST':
@@ -95,10 +102,15 @@ def ChangePassword(request , token):
             
             if  new_password != confirm_password:
                 messages.success(request, 'both should  be equal.')
-                return redirect(f'home/change-password/{token}/')
-                         
+                url_referer = request.META.get('HTTP_REFERER')
+                return redirect(url_referer)
             
             user_obj = User.objects.get(id = user_id)
+            if validar_contrasena(new_password,user_obj.username) is False:
+              messages.success(request, 'Contrasena no cumple requerimientos')
+              url_referer = request.META.get('HTTP_REFERER')
+              return redirect(url_referer)
+
             user_obj.set_password(new_password)
             user_obj.save()
             return redirect('home')  
@@ -208,3 +220,19 @@ def  otp_verification(request):
     else:
         messages.error(request,"El código no coincide")
         return render(request,'home/otp.html')
+    
+
+def validar_contrasena(contrasena, usuario):
+    # Expresión regular para validar la contraseña
+    patron = (
+        r'^(?!.*' + re.escape(usuario) + r')'  # No se parece al usuario
+        r'(?=.*\d)'  # Al menos un número
+        r'(?=.*[A-Z])'  # Al menos una letra mayúscula
+        r'(?=.*[@#%&*_+\[\]?\\|\-])'  # Al menos un carácter especial
+        r'.{8,}$'  # Mínimo 8 caracteres
+    )
+    
+    if re.match(patron, contrasena):
+        return True
+    else:
+        return False
