@@ -14,6 +14,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import *
+from adminpages.models import ServicePage
 from .helpers import send_forget_password_mail
 import re
 #2af
@@ -233,6 +234,73 @@ def validar_contrasena(contrasena, usuario):
     )
     
     if re.match(patron, contrasena):
+        return True
+    else:
+        return False
+      
+  #Inventario
+@login_required  
+def Servicio(request):
+ # messages.success(request, 'Inventario listado')
+  return render(request,'home/index.html')
+  
+@login_required  
+def ServicioRegistrar(request):
+    name = request.POST['txtNombre']
+    last_name = request.POST['txtApellido']
+    phone = request.POST['txtTelefono']
+    service = request.POST['txtServicio']
+    plate = request.POST['txtPlacas']
+    total = request.POST['numTotal']
+
+    if name == "" or last_name == "" or phone == "" or service == "" or plate == "" or total == "":
+      messages.error(request, "Completa todos los campos")
+      return redirect('home')
+    
+    if not validar_placa_mexicana(plate):
+      messages.error(request, "Placa de carro no válida")
+      return redirect('home') 
+
+
+    
+    if not validar_string(phone):
+      messages.error(request, "Campo Total no es una entrada válida")
+      return redirect('home') 
+     
+    try:
+      parse_total = float(total)
+    except Exception as e:
+      messages.error(request, "Campo Total no es una entrada válida")
+      print(e)
+      return redirect('home')
+
+    if not parse_total > 0:
+      messages.error(request, "Cantidad debe de ser mayor o igual a 0")
+      return redirect('home')
+    
+    
+    if ServicePage.objects.filter(plate_code = plate).first():
+      messages.error(request,"Placa ya registrada")
+      return redirect('home')
+
+    try:
+      servicio = ServicePage.objects.create(
+      first_name=name, last_name=last_name, phone=phone, type_service=service, plate_code=plate, price=total)
+      messages.success(request, 'Servicio registrado!')
+    except Exception as e:
+      print(e)  
+    return redirect('home')
+
+def validar_string(string):
+    # Elimina espacios en blanco y luego verifica si la longitud es 10 y si todos los caracteres son dígitos
+    return len(string.strip()) == 10 and string.isdigit()
+
+def validar_placa_mexicana(placa):
+    # Define una expresión regular que coincida con el formato de placas de México
+    patron = r'^[A-Z]{3}\d{3,4}$'
+    
+    # Usa re.match para verificar si la placa cumple con el patrón
+    if re.match(patron, placa):
         return True
     else:
         return False

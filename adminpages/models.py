@@ -46,3 +46,11 @@ class ServiceTicket(models.Model):
   paymethod = models.CharField(max_length=50)
   status = models.CharField(max_length=50)
 
+class ServicePage(models.Model):
+  first_name = models.CharField(max_length=150)
+  last_name = models.CharField(max_length=150)
+  phone = models.CharField(max_length=15, unique=True)
+  type_service = models.CharField(max_length=100)
+  plate_code = models.CharField(unique=True, max_length=7)
+  price = models.DecimalField(max_digits=10, decimal_places=2)
+  service_date = models.DateField(auto_now_add=True)
