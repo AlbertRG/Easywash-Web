@@ -7,6 +7,8 @@ from django.contrib import messages
 from datetime import date
 from dateutil import parser
 import re
+from django.core.paginator import Paginator
+
 # Create your views here.
 #Inventario
 #class InventarioView(LoginRequiredMixin, TemplateView):
@@ -131,7 +133,15 @@ def InventarioEliminar(request, sku):
 def Ventas(request):
   ventasLista = ServicePage.objects.all()
  # messages.success(request, 'Inventario listado')
-  return render(request,'adminpages/ventas.html',{'ventas': ventasLista})
+  paginator = Paginator(ventasLista, 3)  # 10 ventas por página
+
+    # Obtén el número de página de la solicitud GET (si no se proporciona, será la página 1)
+  page_number = request.GET.get('page')
+  print("PAGE NUMBER:")
+  print(page_number)
+    # Obtén la página actual de ventas
+  page = paginator.get_page(page_number)
+  return render(request,'adminpages/ventas.html',{'ventas': page, 'page': page_number})
 @login_required
 def VentasEdicion(request, id):
     venta = ServicePage.objects.get(id=id)
