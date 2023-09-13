@@ -1,149 +1,86 @@
 {% extends 'base.html' %}
+{% block title %} - Inventario {% endblock %}
+
 {% block content %}
-
-      <div>
-        <div class="wrapper">
-          <div class="registration_form">
-            <div class="title">Busqueda de Ventas</div>
-
-            <form>
-              <div class="form_wrap">
-                <div class="input_grp">
-                  <div class="input_wrap">
-                    <label for="fname">Desde</label>
-                    <input type="text" id="fname" />
-                  </div>
-                  <div class="input_wrap">
-                    <label for="lname">Hasta</label>
-                    <input type="text" id="lname" />
-                  </div>
-                </div>
-                <div class="input_wrap">
-                  <label for="city">Telefono</label>
-                  <input type="text" id="city" />
-                </div>
-                <div class="input_wrap">
-                  <label for="city">Placas</label>
-                  <input type="text" id="city" />
-                </div>
-                <div class="input_wrap">
-                  <input type="submit" value="Buscar" class="submit_btn" />
-                </div>
-              </div>
-            </form>
-          </div>
+<style>
+  label {
+    color: white;
+  }
+</style>
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong class="text-dark">{{ message }}</strong>
         </div>
-      </div>
-
-      <table>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Telefono</th>
-          <th>Servicio</th>
-          <th>Placas</th>
-          <th>Total</th>
-        </tr>
-
-        <tr>
-          <td>1</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>2</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>3</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>4</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>5</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>6</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>7</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>8</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>9</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-
-        <tr>
-          <td>10</td>
-          <td>Nombre</td>
-          <td>Apellido</td>
-          <td>Telefono</td>
-          <td>Servicio</td>
-          <td>Placas</td>
-          <td>Total</td>
-        </tr>
-      </table>
-{% endblock content %}
+        {% endfor %}
+        {% endif %}
+        <div class="wrapper">
+            <div class="registration_form">
+              <div class="title">Gestión de Inventario</div>
+                <form class="form-group mt-5" action="buscarVenta" method="POST">{% csrf_token %}
+                  <div class="mt-4">
+                    <div class="form-group">
+                      <label for="txtdate1">Desde</label>
+                        <input type="date" id="txtdate1" name="txtdate1" class="form-control" placeholder="Desde"
+                           maxlength="50">
+                    </div>
+                    <div class="form-group">
+                      <label for="txtdate1">Hasta</label>
+                        <input type="date" id="txtdate2" name="txtdate2" class="form-control" placeholder="Hasta"
+                            maxlength="200">
+                    </div>
+                  </div>
+                    <div class="form-group">
+                      <input type="text" id="txtTelefono" name="txtTelefono" class="form-control" placeholder="Telefono"
+                          maxlength="150">
+                    </div>
+                    <div class="form-group">
+                      <input type="txt" id="txtPlacas" name="txtPlacas" class="form-control" placeholder="Placas"
+                          maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block text-white">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+        <h1>Listado de Ventas</h1>
+        <div class="table-responsive py-2">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Placas</th>
+                        <th>Nombre</th>
+                        <th>Telefono</th>
+                        <th>Servicio</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                        <th colspan="2">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in ventas %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.plate_code}}</td>
+                        <td>{{i.first_name}} {{i.last_name}}</td>
+                        <td>{{i.phone}}</td>
+                        <td>{{i.type_service}}</td>
+                        <td>{{i.price}}</td>
+                        <td>{{i.service_date}}</td>
+                        <td><a href="edicionVenta/{{i.id}}" class="btn btn-info">Editar</a></td>
+                        <td><a href="eliminarVenta/{{i.id}}" class="btn btn-danger btnEliminacion">Eliminar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

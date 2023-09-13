@@ -278,10 +278,6 @@ def ServicioRegistrar(request):
       messages.error(request, "Cantidad debe de ser mayor o igual a 0")
       return redirect('home')
     
-    
-    if ServicePage.objects.filter(plate_code = plate).first():
-      messages.error(request,"Placa ya registrada")
-      return redirect('home')
 
     try:
       servicio = ServicePage.objects.create(
