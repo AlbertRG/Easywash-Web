@@ -54,3 +54,4 @@ class ServicePage(models.Model):
   plate_code = models.CharField(max_length=7)
   price = models.DecimalField(max_digits=10, decimal_places=2)
   service_date = models.DateField(auto_now_add=True)
+  hour_date = models.TimeField(auto_now_add=True)

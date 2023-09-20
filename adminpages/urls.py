@@ -12,5 +12,7 @@ urlpatterns = [
   path('buscarVenta', views.VentasBuscar, name='buscar-venta'),
   path('edicionVenta/<id>',views.VentasEdicion,name="edicion-venta"),
   path('editarVenta',views.VentasEditar,name="editar-venta"),
+  path('estadisticas',views.sales_chart,name="estadisticas"),
+  path('sales-search',views.sales_search,name="sales-search"),
   path('eliminarVenta/<id>',views.VentaEliminar, name='eliminar-venta'),
 ]

@@ -60,7 +60,7 @@
           <li class="logo "><a href="{% url 'home' %}">H2O Detallado Automotriz</a></li>
           <li class="item {% if view_name == 'home' %} selected{% endif %}"><a href="{% url 'home' %}">Inicio</a></li>
           <li class="item {% if view_name == 'ventas' %} selected{% endif %}"><a href="{% url 'ventas' %}">Ventas</a></li>
-            
+          <li class="item {% if view_name == 'estadisticas' %} selected{% endif %}"><a href="{% url 'estadisticas' %}">Estadisticas</a></li>            
           <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
           {% endwith %}
           <li class="item button"><a href="{% url 'logout' %}">Salir</a></li>

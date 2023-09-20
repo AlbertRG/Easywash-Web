@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %} - Estadísticas {% endblock %}
+{% block content %}
+<div class="row " style="background: white;">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong class="text-dark">{{ message }}</strong>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <form action="sales-search" method="POST">{% csrf_token %} <!-- Agregamos un formulario -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="desde">Desde</label>
+                            <input type="date" class="form-control" id="desde" name="desde"> <!-- Agregamos el atributo 'name' para identificar el campo en el formulario -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="hasta">Hasta</label>
+                            <input type="date" class="form-control" id="hasta" name="hasta"> <!-- Agregamos el atributo 'name' para identificar el campo en el formulario -->
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Buscar</button> <!-- Agregamos 'type="submit"' para que el botón envíe el formulario -->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+  <div class="col-md-6 my-4">
+    <div class="bg-white">
+      <div class="card-body">
+    <h2>Ventas</h2>
+    <canvas id="salesChart"></canvas>
+    
+    <div id="heatmap-chart"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+      /////////////////////////////////////////////////// VENTAS 
+      var ctx = document.getElementById('salesChart').getContext('2d');
+      var fechas = {{ fechas|safe }};
+      var montos = {{ montos|safe }};
+      
+      var data = {
+          labels: fechas,
+          datasets: [{
+              label: 'Ventas',
+              data: montos,
+              fill: false, // No rellenar el área bajo la línea
+              borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
+              borderWidth: 2 // Ancho de la línea
+          }]
+      };
+      
+      var config = {
+          type: 'line',
+          data: data,
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      };
+      
+      var myChart = new Chart(ctx, config);
+  </script>
+</div>
+</div>
+</div>
+<div class="col-md-6 my-4">
+  <div class="bg-white">
+    <div class="card-body">
+      <h2>Productos</h2>
+    <canvas id="serviceChart"></canvas>
+  <script>
+    ////////////////////////////////////////////////Servicios
+    var ctx = document.getElementById('serviceChart').getContext('2d');
+    var serviceTypes = {{ service_types|safe }};
+    var serviceCounts = {{ service_counts|safe }};
+    
+    var data = {
+        labels: serviceTypes,
+        datasets: [{
+            label: 'Cantidad de Servicios',
+            data: serviceCounts,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
+            borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
+            borderWidth: 1 // Ancho del borde de las barras
+        }]
+    };
+    
+    var config = {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+    
+    var myChart = new Chart(ctx, config);
+</script>
+</div>
+</div>
+</div>
+<div class="col-md-6 my-4">
+  <div class="bg-white">
+    <div class="card-body">
+      <h2>Servicios Realizados</h2>
+    <canvas id="timeSeriesChart"></canvas>
+<script>
+  ////////////////////////////////////////series
+  var ctx = document.getElementById('timeSeriesChart').getContext('2d');
+  var fechas = {{ fechasSeries|safe }};
+  var registros = {{ registros|safe }};
+  
+  var data = {
+      labels: fechas,
+      datasets: [{
+          label: 'Servicios Registrados',
+          data: registros,
+          fill: false, // No rellenar el área bajo la línea
+          borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
+          borderWidth: 2 // Ancho de la línea
+      }]
+  };
+  
+  var config = {
+      type: 'line',
+      data: data,
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  };
+  
+  var myChart = new Chart(ctx, config);
+</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -169,3 +169,5 @@ EMAIL_PORT = 587
 #poner credenciales
 EMAIL_HOST_USER = 'x@gmail.com'
 EMAIL_HOST_PASSWORD = 'x'
+#pip install pandas
+#pip install weasyprint
