@@ -34,24 +34,27 @@ def LogOut(request):
 
 
 def LoginInterface(request):
- if request.user.is_authenticated:
-   return redirect('home')
- if request.method == 'POST':
-   username=request.POST["username"]
-   user_obj = User.objects.get(username = username)
-   password=request.POST["password"]
-   request.session["username"]=username
-   request.session["password"]=password
-   request.session["email"]=user_obj.email
-   user = authenticate(request, username=username, password=password)
-   if user is not None:
-     send_otp(request)
-     return render(request,'home/otp.html',{"email":user_obj.email})
-   else:
-     # Lógica personalizada para manejar credenciales incorrectas
-     messages.error(request,"Nombre de usuario o contraseña incorrectos.")
-
- return render(request, 'registration/login.html')
+  print("HOLAAAAAAAAAAAAAAAAAA")
+  request.session.flush()
+  if request.method == 'POST':
+    username=request.POST["username"]
+    user_obj = User.objects.get(username = username)
+    password=request.POST["password"]
+    request.session["username"]=username
+    request.session["password"]=password
+    request.session["email"]=user_obj.email
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+      send_otp(request)
+      return render(request,'home/otp.html',{"email":user_obj.email})
+    else:
+      request.session.flush()
+      # Lógica personalizada para manejar credenciales incorrectas
+      messages.error(request,"Nombre de usuario o contraseña incorrectos.")
+  if request.user.is_authenticated:
+    print("if User.is_authenticated:")
+    return redirect('home')
+  return render(request, 'registration/login.html')
   
 
 def ChangePassword(request , token):
@@ -173,6 +176,7 @@ def Register(request):
   
 def signin_verification(request):
   if User.is_authenticated:
+      print("if User.is_authenticated:")
       return redirect('home/index.html')
   if request.method=="POST":
     username=request.POST["username"]
@@ -182,10 +186,14 @@ def signin_verification(request):
     request.session["password"]=password
     request.session["email"]=user_obj.email
     user = authenticate(request, username=username, password=password)
+    request.session.flush()
+    print("if request.method=='POST':")
     if user is not None:
+      print("if user is not None:")
       send_otp(request)
       return render(request,'otp.html',{"email":user_obj.email})
     else:
+      print("else")
       messages.info(request,"Credenciales incorrectas")
       return redirect("signin_verification")
           

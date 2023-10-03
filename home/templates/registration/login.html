@@ -22,7 +22,7 @@
 
 
 			<div class="login">
-				<form method='POST'>{% csrf_token %}
+				<form action="{% url 'loginaccount' %}" method='POST'>{% csrf_token %}
 					<label for="chk" aria-hidden="true">Iniciar sesión</label>
 					<input type="text" name="username" placeholder="Usuario" required="">
 					<input type="password" name="password" placeholder="Contraseña" required="">
