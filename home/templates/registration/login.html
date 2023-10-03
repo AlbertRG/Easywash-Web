@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en" >
 <head>
@@ -27,7 +28,7 @@
 					<input type="password" name="password" placeholder="Contraseña" required="">
 					<button type"submit">Iniciar sesión</button>
           <a href='{% url "register" %}'>Registrar</a>
-          <a href='{% url "forget_password" %}'>¿Olvidaste tu contraseña?</a>
+          <a href='{% url "forget-password" %}'>¿Olvidaste tu contraseña?</a>
 				</form>
         {%if messages%}
           {%for message in messages%}
@@ -41,7 +42,8 @@
   
 </body>
 </html>
-4
+
+
 
 
 

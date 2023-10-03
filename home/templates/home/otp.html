@@ -1,92 +1,48 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="{% static 'css/home.css'%}" rel="stylesheet" />
+
     <title>Confirmación de Identidad</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            background: linear-gradient(to bottom, #2f2e32, #03c04a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* 100% de la altura de la ventana */
-        }
-
-        .content {
-            text-align: center;
-            padding: 20px;
-            background-color: #fff; /* Fondo blanco */
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            max-width: 80%; /* Máximo ancho del contenido */
-        }
-
-        strong {
-            font-size: 24px;
-            color: #333;
-        }
-
-        p {
-            font-size: 18px;
-            color: #555;
-        }
-
-        form {
-            margin-top: 20px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <div class="content">
-            <strong>Confirma que eres tú</strong>
-
-            <p>Verifica la bandeja de entrada de - {{email}} - e ingresa el código de verificación</p>
-
-            <form action="otp_verification" method="POST">
-                {% csrf_token %}
-                <label for="otp">Ingresa el OTP:</label>
-                <input type="text" id="otp" required name="otp" placeholder="Ingrese el OTP" required><br><br>
-                <button type="submit">Verificar</button>
-            </form>
-
-            {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+        <div class="row justify-content-center">
+            <div class="col-md-6 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title text-center title">Confirma que eres tú</h3>
+                        <p class="card-text text-center">Verifica la bandeja de entrada de - {{email}} - e ingresa el código de verificación</p>
+    
+                        <form action="otp_verification" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="otp">Ingresa el OTP:</label>
+                                <input type="text" pattern="[0-9]{6}" id="otp" class="form-control" required name="otp" placeholder="Ingrese el OTP">
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-purple">Verificar</button>
+                            </div>
+                        </form>
+    
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-dismissible alert-secondary mt-3">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <p class="mb-0">{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

@@ -1,14 +1,16 @@
 from django.shortcuts import render
-
+from django.utils import timezone
+import pytz
 # Create your views here.
 from django.shortcuts import render
 from django.http import HttpResponse
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required # for functions
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin #for classes
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
@@ -24,30 +26,13 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
 from django.views.generic.base import RedirectView
 from django.contrib import messages
-class SignupView(CreateView):
-  form_class = UserCreationForm
-  template_name = 'home/register.html'
-  #success_url = '/smart/notes'
-  
-  def get(self, request, *args, **kwargs):
-    if self.request.user.is_authenticated:
-      return redirect('home/index.html')
-    return super().get(request, *args, **kwargs)
 
 
-class LogoutInterfaceView(LogoutView):
-  template_name = 'home/logout.html'
-  
-  def get(self, request, *args, **kwargs):
-    if self.request.user.is_authenticated:
-      return redirect('home/index.html')
-    return super().get(request, *args, **kwargs)
+def LogOut(request):
+   logout(request)
+   return redirect('home')
 
 
-# Create your views here.
-class LoginInterfaceView(LoginView):
-  template_name = 'home/login.html'
-  
 def LoginInterface(request):
  if request.user.is_authenticated:
    return redirect('home')
@@ -66,24 +51,15 @@ def LoginInterface(request):
      # Lógica personalizada para manejar credenciales incorrectas
      messages.error(request,"Nombre de usuario o contraseña incorrectos.")
 
- return render(request, 'home/login.html')
+ return render(request, 'registration/login.html')
   
-  
-class HomeView(LoginRequiredMixin, TemplateView):
-  template_name = 'home/index.html'
-  login_url = 'loginaccount'
-  #extra_context = {'today': datime.today()}
 
-#class AuthorizedView(LoginRequiredMixin,TemplateView):
-#  template_name = 'home/authorized.html'
-#  login_url = '/admin'
 def ChangePassword(request , token):
     print('Request:    ')
   
     if request.user.is_authenticated:
       return redirect('home')
     context = {}
-    
     
     try:
         profile_obj = Profile.objects.filter(forget_password_token = token).first()
@@ -97,18 +73,32 @@ def ChangePassword(request , token):
             user_id = request.POST.get('user_id')
             
             if user_id is  None:
-                messages.success(request, 'No user id found.')
+                messages.success(request, 'Usuario no encontrado')
                 return redirect(f'home/change-password/{token}/')
                 
+            #Tiempo de 5 min
+            now = datetime.now(timezone.utc)
+            # Calcula la fecha y hora 5 minutos adelante desde la crecion del token
+            tokenDate = profile_obj.created_at + timedelta(minutes=5)
+            print(now)
+            print(profile_obj.created_at)
+            print(tokenDate)
+
+            
+            if now > tokenDate:
+              messages.success(request, 'Tiempo expirado, vuelva a solicitar cambio de contraseña')
+              url_referer = request.META.get('HTTP_REFERER')
+              return redirect('home')  
+
             
             if  new_password != confirm_password:
-                messages.success(request, 'both should  be equal.')
+                messages.success(request, 'Ambas contraseñas deben ser iguales')
                 url_referer = request.META.get('HTTP_REFERER')
                 return redirect(url_referer)
             
             user_obj = User.objects.get(id = user_id)
             if validar_contrasena(new_password,user_obj.username) is False:
-              messages.success(request, 'Contrasena no cumple requerimientos')
+              messages.success(request, 'Contraseña no cumple requisitos')
               url_referer = request.META.get('HTTP_REFERER')
               return redirect(url_referer)
 
@@ -121,26 +111,27 @@ def ChangePassword(request , token):
     return render(request , 'home/change-password.html' , context)
 
 
-
 import uuid
 def ForgetPassword(request):
     try:
         if request.method == 'POST':
             username = request.POST.get('username')
             if not User.objects.filter(username=username).first():
-                messages.success(request, 'Not user found with this username.')
+                messages.success(request, 'No se encontró ningún usuario con este nombre')
                 return redirect('forget-password')
             
             user_obj = User.objects.get(username = username)
             token = str(uuid.uuid4())
             profile_obj= Profile.objects.get(user = user_obj)
             profile_obj.forget_password_token = token
+            #Creation date of token
+            timezone = pytz.timezone('America/Mexico_City')
+            dateToken = datetime.now(timezone)
+            profile_obj.created_at = dateToken
             profile_obj.save()
             send_forget_password_mail(user_obj.email , token)
-            messages.success(request, 'An email is sent.')
+            messages.success(request, 'Un correo de recuperación fue enviado')
             return redirect('forget-password')
-                
-    
     
     except Exception as e:
         print(e)
@@ -156,11 +147,11 @@ def Register(request):
         try:
             if User.objects.filter(username = username).first():
                 messages.success(request, 'Username is taken.')
-                return redirect('home/register')
+                return redirect('register')
 
             if User.objects.filter(email = email).first():
                 messages.success(request, 'Email is taken.')
-                return redirect('home/register')
+                return redirect('register')
             
             user_obj = User(username = username , email = email)
             user_obj.set_password(password)
@@ -168,7 +159,7 @@ def Register(request):
     
             profile_obj = Profile.objects.create(user = user_obj )
             profile_obj.save()
-            return redirect('home/login')
+            return redirect('home')
 
         except Exception as e:
             print(e)
@@ -204,23 +195,55 @@ def send_otp(request):
     for x in range(0,6):
         s+=str(random.randint(0,9))
     request.session["otp"]=s
-    send_mail("Tu código de inicio de sesión de dos factores","Tu código de inicio de sesión de dos factores es "+s,'easywashgdl@gmail.com',[request.session['email']],fail_silently=False)
+    request.session["date"] = str(datetime.now(timezone.utc))
+    print("@@@@@@@@@@@@@@@@@@@@")
+    print("saved in send_otp")
+    print(request.session["date"])
+    print("@@@@@@@@@@@@@@@@@@@@")
+    send_mail("Tu código de inicio de sesión de dos factores","Tu código de inicio de sesión de dos factores es "+s +"\n Este código expirará en 5 minutos.",'easywashgdl@gmail.com',[request.session['email']],fail_silently=False)
     return render(request,"home/otp.html")
 
 
 def  otp_verification(request):
-    if  request.method=='POST':
-        otp_=request.POST.get("otp")
+  if  request.method=='POST':
+    otp_=request.POST.get("otp")
+    sessionDate=request.session["date"]
+    print("@@@@@@@@@@@@@@@@@@@@")
+    print("saved")
+    print(sessionDate)
+    print("otp")
+    print(otp_)
+    print("@@@@@@@@@@@@@@@@@@@@")
+
+    otpDate =  datetime.strptime(sessionDate, "%Y-%m-%d %H:%M:%S.%f%z")
+    dateNow = datetime.now(timezone.utc)
+    tokenDate = otpDate + timedelta(minutes=5)
+    print("@@@@@@@@@@@@@@@@@@@@")
+    print("saved")
+    print(sessionDate)
+    print("converted")
+    print(otpDate)
+    print("now")
+    print(dateNow)
+    print()
+    if dateNow > tokenDate:
+      email = request.session["email"]
+      messages.error(request,"Código expirado")
+      return render(request,'home/otp.html',{'email':email})
+    
     if otp_ == request.session["otp"]:
-        username = request.session['username']
-        password = request.session['password']
-        user = authenticate(request, username=username, password=password)
-        login(request, user)
-        #User.is_active=True
-        return redirect('home')
+      username = request.session['username']
+      password = request.session['password']
+      user = authenticate(request, username=username, password=password)
+      login(request, user)
+      #User.is_active=True
+      return redirect('home')
     else:
-        messages.error(request,"El código no coincide")
-        return render(request,'home/otp.html')
+      email = request.session["email"]
+      messages.error(request,"El código no coincide")
+      return render(request,'home/otp.html',{'email':email})
+  else:
+    return redirect("home")
     
 
 def validar_contrasena(contrasena, usuario):
@@ -264,7 +287,7 @@ def ServicioRegistrar(request):
 
     
     if not validar_string(phone):
-      messages.error(request, "Campo Total no es una entrada válida")
+      messages.error(request, "Campo Teléfono no es una entrada válida")
       return redirect('home') 
      
     try:

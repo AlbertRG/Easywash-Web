@@ -15,4 +15,7 @@ urlpatterns = [
   path('estadisticas',views.sales_chart,name="estadisticas"),
   path('sales-search',views.sales_search,name="sales-search"),
   path('eliminarVenta/<id>',views.VentaEliminar, name='eliminar-venta'),
+  path('sales_PDF',views.sales_PDF, name='sales_PDF'),
+  path('pdf_report',views.pdf_report_create, name='pdf_report'),
+
 ]

@@ -20,7 +20,7 @@
         <div class="wrapper">
             <div class="registration_form">
               <div class="title">Gestión de Inventario</div>
-                <form class="form-group mt-5" action="buscarVenta" method="POST">{% csrf_token %}
+                <form class="form-group mt-5" action="buscarVenta" method="GET">
                   <div class="mt-4">
                     <div class="form-group">
                       <label for="txtdate1">Desde</label>
@@ -46,7 +46,10 @@
                           maxlength="50">
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-block text-white">Buscar</button>
+                        <button type="submit" name="accion" value="buscar" class="btn btn-success btn-block text-white">Buscar</button>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="accion" value="descargar" class="btn btn-success btn-block text-white">PDF</button>
                     </div>
                 </form>
             </div>
