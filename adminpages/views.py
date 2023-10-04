@@ -20,6 +20,12 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.views.generic import View
 from xhtml2pdf import pisa
+from django.conf import settings 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+
 # Create your views here.
 #Inventario
 #class InventarioView(LoginRequiredMixin, TemplateView):
@@ -89,7 +95,7 @@ def pdf_report_create(request):
   
   if phone=="" and service == "":
     products = ServicePage.objects.filter(service_date__gte=date1,service_date__lte=date2,plate_code=plate)
-    mmensajes = ['Ventas desde '+date1 +" hasta "+date2,  'Ventas de placa '+plate]
+    mensajes = ['Ventas desde '+date1 +" hasta "+date2,  'Ventas de placa '+plate]
   
   if date1 == "" and service == "":
     products = ServicePage.objects.filter(plate_code=plate,service_date__lte=date2,phone=phone)
@@ -105,19 +111,19 @@ def pdf_report_create(request):
 
   response = HttpResponse(content_type='application/pdf')
 
-  response['Content-Disposition'] = 'filename="products_report.pdf"'
+  response['Content-Disposition'] = 'filename="reporte_ventas.pdf"'
 
-  template = get_template(template_path)
+  pdf_page = pisa.pisaDocument(
+        get_template(template_path).render(context),
+        response,
+        encoding='UTF-8',
+        link_callback=lambda uri, rel: uri.startswith(settings.MEDIA_URL)
+    )
 
-  html = template.render(context)
+  if not pdf_page.err:
+    return response
 
-    # create a pdf
-  pisa_status = pisa.CreatePDF(
-    html, dest=response)
-    # if error then show some funy view
-  if pisa_status.err:
-    return HttpResponse('We had some errors <pre>' + html + '</pre>')
-  return response
+  return HttpResponse('We had some errors while generating the PDF.')
 
 
 #GRAPH
@@ -563,7 +569,7 @@ def VentasBuscar(request):
     messages.success(request, 'Ventas de teléfono '+phone)
     messages.success(request, 'Ventas de placa '+plate)
     return render(request,'adminpages/ventas.html',{'ventas': ventasdate12})
-  elif accion == "descargar":
+  elif accion == "descargar" or accion == "enviar":
     date1 = request.GET.get('txtdate1')
     date2 = request.GET.get('txtdate2')
     phone = request.GET.get('txtTelefono')
@@ -642,7 +648,7 @@ def VentasBuscar(request):
 
     response = HttpResponse(content_type='application/pdf')
 
-    response['Content-Disposition'] = 'filename="products_report.pdf"'
+    response['Content-Disposition'] = 'filename="reporte_ventas.pdf"'
 
     template = get_template(template_path)
 
@@ -654,6 +660,42 @@ def VentasBuscar(request):
       # if error then show some funy view
     if pisa_status.err:
       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    if accion == "enviar":
+      # Dirección de correo electrónico del remitente y destinatario
+      from_email = settings.EMAIL_HOST_USER
+      to_email = 'rafaruiz5269@gmail.com'
+
+      # Configuración del servidor SMTP
+      smtp_server = 'smtp.gmail.com'
+      smtp_port = 587
+      smtp_username = settings.EMAIL_HOST_USER
+      smtp_password = settings.EMAIL_HOST_PASSWORD
+
+      # Crear el objeto MIMEMultipart
+      msg = MIMEMultipart()
+      msg['From'] = from_email
+      msg['To'] = to_email
+      msg['Subject'] = 'Reporte de Ventas'
+
+      # Adjuntar el archivo PDF al correo electrónico
+      attachment = MIMEBase('application', 'octet-stream')
+      attachment.set_payload(response.getvalue())
+      encoders.encode_base64(attachment)
+      attachment.add_header('Content-Disposition', 'attachment; filename="reporte_ventas.pdf"')
+      msg.attach(attachment)
+
+      # Iniciar sesión en el servidor SMTP
+      server = smtplib.SMTP(smtp_server, smtp_port)
+      server.starttls()
+      server.login(smtp_username, smtp_password)
+
+      # Enviar el correo electrónico
+      server.sendmail(from_email, to_email, msg.as_string())
+
+      # Cerrar la conexión con el servidor SMTP
+      server.quit()
+      messages.success(request,"Correo enviado")
+      return render(request,'adminpages/ventas.html',{'ventas':products})
     return response
   
 def validar_string(string):
