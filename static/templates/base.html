@@ -25,9 +25,29 @@
     />
 
     <style>
-      .selected{
-        background-color: red;
+      /* Estilo base para los elementos <li> */
+        .item {
+          display: inline-block;
+          text-decoration: none;
+          color: white;
+          margin: 0 10px;
+          padding: 10px 20px;
+          border-radius: 20px;
+          transition: background-color 0.3s ease; /* Agrega una transición suave para los cambios de color de fondo */
+        }
+        a{
+          text-decoration: none;
+          color: white;
+        }
+        a:link, a:visited, a:active {
+          text-decoration:none;
       }
+        
+        /* Estilo para los elementos <li> seleccionados */
+        .item.selected {
+          background-color: #03c04a; /* Cambia el color de fondo al seleccionar */
+          color: #fff; /* Cambia el color del texto al seleccionar */
+        }
     </style>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

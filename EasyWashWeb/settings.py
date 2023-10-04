@@ -161,7 +161,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 #poner credenciales
-EMAIL_HOST_USER = 'x@gmail.com'
-EMAIL_HOST_PASSWORD = 'x'
+EMAIL_HOST_USER = 'easywashgdl@gmail.com'
+EMAIL_HOST_PASSWORD = 'xqittguepsgwtrga'
 #pip install pandas
 #pip install weasyprint

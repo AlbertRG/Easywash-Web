@@ -33,6 +33,7 @@ from email import encoders
 #  login_url = 'adminpages/inventario.html,'
 #PDF
 #VENTAS
+@login_required 
 def pdf_report_create(request):
   date1 = request.GET['txtdate1']
   date2 = request.GET['txtdate2']
@@ -127,8 +128,7 @@ def pdf_report_create(request):
 
 
 #GRAPH
-
-
+ 
 class PDFView(View):
     def get(self, request):
         # Renderiza un template HTML con una gráfica generada con JavaScript
@@ -144,7 +144,7 @@ class PDFView(View):
         response['Content-Disposition'] = 'inline; filename="output.pdf"'
     
         return response
-
+@login_required 
 def sales_PDF(request):
   date1 = request.POST['desde']
   date2 = request.POST['hasta']
@@ -211,7 +211,7 @@ def sales_PDF(request):
   
 
 #Graficos
- 
+@login_required 
 def sales_chart(request):
     #Ventas
     sales_data = ServicePage.objects.all().order_by('service_date')
@@ -229,7 +229,7 @@ def sales_chart(request):
     
     
     return render(request, 'adminpages/charts.html', {'fechas':fechas, 'montos':montos, 'service_types': service_types, 'service_counts': service_counts, 'fechasSeries': fechasSeries, 'registros': registros})
-
+@login_required 
 def sales_search(request):
   date1 = request.POST['desde']
   date2 = request.POST['hasta']
@@ -281,7 +281,7 @@ def sales_search(request):
 
 
 
- 
+@login_required 
 def service_chart(request):
     service_data = ServicePage.objects.values('type_service').annotate(count=models.Count('type_service'))
     service_types = [entry['type_service'] for entry in service_data]
@@ -289,13 +289,13 @@ def service_chart(request):
     return render(request, 'service_chart.html', {'service_types': service_types, 'service_counts': service_counts})
 
 #Inventario
-  
+@login_required 
 def Inventario(request):
   inventarioLista = Inventory.objects.all()
  # messages.success(request, 'Inventario listado')
   return render(request,'adminpages/inventario.html',{'inventario': inventarioLista})
 
-  
+@login_required   
 def InventarioRegistrar(request):
     codigo = request.POST['txtCodigo']
     nombre = request.POST['txtNombre']
@@ -340,12 +340,12 @@ def InventarioRegistrar(request):
     except Exception as e:
       print(e)  
     return redirect('inventario')
-
+@login_required 
 def InventarioEdicion(request, sku):
     article = Inventory.objects.get(sku=sku)
     return render(request, "adminpages/inventario-edicion.html", {"inventory": article})
 
-
+@login_required 
 def InventarioEditar(request):
     codigo = request.POST['txtCodigo']
     nombre = request.POST['txtNombre']
@@ -397,31 +397,31 @@ def InventarioEditar(request):
 
     return redirect('inventario')
 
-
+@login_required 
 def InventarioEliminar(request, sku):
     curso = Inventory.objects.get(sku=sku)
     curso.delete()
     messages.success(request, '¡Producto eliminado!')
     return redirect('inventario')
 #Ventas
-  
+@login_required   
 def Ventas(request):
   ventasLista = ServicePage.objects.all()
   return render(request,'adminpages/ventas.html',{'ventas': ventasLista})
 
 
-
+@login_required 
 def VentasEdicion(request, id):
     venta = ServicePage.objects.get(id=id)
     return render(request, "adminpages/ventas-edicion.html", {"venta": venta})
-
+@login_required 
 def VentaEliminar(request, id):
     venta = ServicePage.objects.get(id=id)
     venta.delete()
     messages.success(request, 'Venta eliminado!')
     return redirect('ventas')
 
-
+@login_required 
 def VentasEditar(request):
     codigo = request.POST["txtCodigo"]
     nombre = request.POST['txtNombre']
@@ -471,7 +471,7 @@ def VentasEditar(request):
 
     return redirect('ventas')
 
-
+@login_required 
 def VentasBuscar(request):
   date1 = request.GET['txtdate1']
   date2 = request.GET['txtdate2']
@@ -663,7 +663,7 @@ def VentasBuscar(request):
     if accion == "enviar":
       # Dirección de correo electrónico del remitente y destinatario
       from_email = settings.EMAIL_HOST_USER
-      to_email = 'rafaruiz5269@gmail.com'
+      to_email  = request.user.email
 
       # Configuración del servidor SMTP
       smtp_server = 'smtp.gmail.com'
@@ -697,11 +697,11 @@ def VentasBuscar(request):
       messages.success(request,"Correo enviado")
       return render(request,'adminpages/ventas.html',{'ventas':products})
     return response
-  
+@login_required  
 def validar_string(string):
     # Elimina espacios en blanco y luego verifica si la longitud es 10 y si todos los caracteres son dígitos
     return len(string.strip()) == 10 and string.isdigit()
-
+@login_required 
 def validar_placa_mexicana(placa):
     # Define una expresión regular que coincida con el formato de placas de México
     patron = r'^[A-Z]{3}\d{3,4}$'
