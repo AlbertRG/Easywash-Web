@@ -48,6 +48,9 @@
           background-color: #03c04a; /* Cambia el color de fondo al seleccionar */
           color: #fff; /* Cambia el color del texto al seleccionar */
         }
+        body{
+          background: #9597a6;
+        }
     </style>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -82,8 +85,11 @@
           <li class="item {% if view_name == 'ventas' %} selected{% endif %}"><a href="{% url 'ventas' %}">Ventas</a></li>
           <li class="item {% if view_name == 'estadisticas' %} selected{% endif %}"><a href="{% url 'estadisticas' %}">Estadisticas</a></li>            
           <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
+          <li class="item {% if view_name == 'editar-cuenta' %} selected{% endif %}"><a href="{% url 'editar-cuenta' %}">Mi Cuenta</a></li>
+
           {% endwith %}
-          <li class="item button"><a href="{% url 'logout' %}">Salir</a></li>
+
+          <li class="item"><a href="{% url 'logout' %}">Salir</a></li>
           <li class="toggle"><span class="bars"></span></li>
         </ul>
       </nav>

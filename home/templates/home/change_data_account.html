@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %} - Editar Cuenta {% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editar Cuenta</h1>
+    <div class="card bg-dark text-white"> <!-- Agrega la clase bg-dark para el fondo negro y text-white para el texto en blanco -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong class="text-dark">{{ message }}</strong>
+        </div>
+        {% endfor %}
+      {% endif %}
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Nombre de usuario:</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo electrónico:</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Escribe tu contraseña:</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+                
+                <button type="submit" class="btn btn-success">Guardar cambios</button> <!-- Cambia la clase a btn-success para un botón verde -->
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

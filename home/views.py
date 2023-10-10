@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.utils import timezone
 import pytz
+from cryptography.fernet import Fernet
 # Create your views here.
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -26,6 +27,31 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
 from django.views.generic.base import RedirectView
 from django.contrib import messages
+
+#Editar cuenta
+@login_required
+def editar_cuenta(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        new_username = request.POST.get('username')
+        new_email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Verificar la contraseña del usuario actual
+        user = authenticate(username=request.user.username, password=password)
+
+        if user is not None:
+            # La contraseña es válida, actualiza los datos de la cuenta
+            request.user.username = new_username
+            request.user.email = new_email
+            request.user.save()
+
+            messages.success(request, 'Los cambios se han guardado correctamente.')
+            return redirect('editar-cuenta')  # Redirecciona a la misma página después de guardar los cambios.
+        else:
+            messages.error(request, 'Contraseña incorrecta. Los cambios no se han guardado.')
+
+    return render(request, 'home/change_data_account.html')
 
 
 def LogOut(request):
@@ -311,9 +337,19 @@ def ServicioRegistrar(request):
     
 
     try:
+      key = Fernet.generate_key()
+      fernet = Fernet(key)
+      encrypted_name = fernet.encrypt(name.encode())
+      encrypted_last_name = fernet.encrypt(last_name.encode())
+      encrypted_phone= fernet.encrypt(phone.encode())
+      encrypted_service = fernet.encrypt(service.encode())
+      encrypted_plate = fernet.encrypt(plate.encode())
+      encrypted_total = fernet.encrypt(total.encode())
+
       servicio = ServicePage.objects.create(
-      first_name=name, last_name=last_name, phone=phone, type_service=service, plate_code=plate, price=total)
+      first_name=encrypted_name, last_name=encrypted_last_name, phone=encrypted_phone, type_service=encrypted_service, plate_code=encrypted_plate, price=total)
       messages.success(request, 'Servicio registrado!')
+      print("DOOOOOOOOOOOOOOOOOOONEEEEEEEEE")
     except Exception as e:
       print(e)  
     return redirect('home')

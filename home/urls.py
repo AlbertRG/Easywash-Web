@@ -11,5 +11,6 @@ urlpatterns = [
     path('forget-password' , views.ForgetPassword , name="forget-password"),
     path('change-password/<token>/' , views.ChangePassword , name="change_password"),
     path('otp_verification',views.otp_verification,name="otp_verification"),
+    path('editar-cuenta', views.editar_cuenta, name='editar-cuenta'),
 
 ]
