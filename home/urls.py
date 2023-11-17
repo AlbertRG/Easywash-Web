@@ -12,5 +12,6 @@ urlpatterns = [
     path('change-password/<token>/' , views.ChangePassword , name="change_password"),
     path('otp_verification',views.otp_verification,name="otp_verification"),
     path('editar-cuenta', views.editar_cuenta, name='editar-cuenta'),
-
+    path('eliminar-cuenta', views.eliminarCuenta, name='eliminar-cuenta'),
+    path('terms', views.terminosCondiciones, name='terms'),
 ]

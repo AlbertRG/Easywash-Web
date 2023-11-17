@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Cómo eliminar una cuenta de Easy Wash?</title>
+</head>
+<body>
+    <div style="padding-left: 30px; padding-right: 30; padding-bottom: 40px;">
+        <h1>Eliminar cuenta - Easy Wash</h1>
+
+        <p>Nuestra aplicación recopila algunos datos necesarios para su funcionamiento, así que hemos implementado la opción de eliminar la cuenta en caso de que algunos usuarios ya no quieran tener su información en ella</p>
+
+        <h2>1. Ingresar a "Mi cuenta"</h2>
+        <p>En la aplicación, puedes presionar el ícono del engranaje y encontrarás la opción de "Mi cuenta", al acceder ahí verás un botón con la opción "Eliminar la cuenta"</p>
+        <img src="{% static 'Images/MiCuenta.jpeg'%}"/>
+        <img src="{% static 'Images/eliminar.jpeg'%}"/>
+        </br>
+
+        <h2>2. ¿Está completamente seguro de eliminar esta cuenta?</h2>
+        <p>Aparecerá una advertencia que evita eliminar los datos por error. En caso de que desees eliminar los datos deberás presionar en "Sí" y si no es así, en "No"</p>
+        <img src="{% static 'Images/SeguroEliminar.jpeg'%}"/>
+        </br>
+
+        <h2>3. Ingresar password para eliminar</h2>
+        <p>En caso de haber seleccionado la opción de "Sí" en el paso anterior, se debera ingresar la contraseña de la cuenta para asegurar que usted la quiere eliminar. y con esto su cuenta será eliminada</p>
+        <img src="{% static 'Images/IngresarPassword.jpeg'%}"/>
+        </br>
+
+        <h2>4. Eliminar datos</h2>
+        <p> Si todo salió bien, te llevará a la vista del login</p>
+        <img src="{% static 'Images/bienvenido.jpeg'%}"/>
+        </br>
+
+        <h2>4. ¿Por qué podría haber fallado la eliminación de mi cuenta?</h2>
+        <p>Es importante aclarar que para realizar este proceso se necesita estar conectado a internet, de lo contrario, no se podrá eliminar correctamente la información</p>
+        </br>
+
+        <p>Atentamente,</p>
+
+        <p>
+            Rafael Ruiz</br>
+            Alberto Rivero</br>
+            Desarrolladores de la Aplicación Easy Wash</br>
+        </p> 
+
+        <p><b>Easy Wash</b></p>
+    </div>
+</body>
+<style>
+    p {
+        font-family: Verdana;
+    }
+
+    h1 {
+        font-family: Verdana;
+    }
+
+    h2 {
+        font-family: Verdana;
+    }
+
+    li {
+        font-family: Verdana;
+    }
+    img{
+        width:100%;
+        max-width:300px;
+    }
+</style>
+</html>

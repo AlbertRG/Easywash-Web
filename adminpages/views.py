@@ -197,7 +197,6 @@ def sales_PDF(request):
   html_template = render_to_string('adminpages/chartReports.html', context, request=request)
         
         # Convierte el HTML en PDF utilizando pdfkit
-  print('Rafa es puto')
   config = {
     "wkhtmltopdf": "/usr/local/bin/wkhtmltopdf",  # Reemplaza con la ubicación correcta en tu sistema
 }

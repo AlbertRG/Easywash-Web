@@ -17,6 +17,7 @@ class Client(models.Model):
 class Vehicle(models.Model):
   owner = models.ForeignKey(Client, on_delete=models.CASCADE)
   plate = models.CharField(unique=True, max_length=7)
+  brand = models.CharField(max_length=50)
   model = models.CharField(max_length=50)
   year = models.IntegerField()
   color = models.CharField(max_length=50)
@@ -34,17 +35,17 @@ class Inventory(models.Model):
   
   
 class Service(models.Model):
-  type = models.CharField(max_length=100)
-  car = models.ForeignKey(Vehicle, on_delete=models.DO_NOTHING)
+  name = models.CharField(max_length=50)
   price = models.DecimalField(max_digits=10, decimal_places=2)
-  service_date = models.DateField(auto_now_add=True)
   
 class ServiceTicket(models.Model):
   client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
-  service = models.ForeignKey(Service, on_delete=models.DO_NOTHING)
-  date = models.DateField(auto_now_add=True)
-  paymethod = models.CharField(max_length=50)
+  car = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, null=True, default=0)
+  service = models.CharField(max_length=100)
+  date = models.DateTimeField(auto_now_add=True)
+  total = models.CharField(max_length=50,default="0")
   status = models.CharField(max_length=50)
+  paymethod = models.CharField(max_length=50,default="Efectivo")
 
 class ServicePage(models.Model):
   first_name = models.CharField(max_length=150)

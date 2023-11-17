@@ -80,9 +80,17 @@ WSGI_APPLICATION = 'EasyWashWeb.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+    #'default': {
+     #  'ENGINE': 'django.db.backends.sqlite3',
+      # 'NAME': BASE_DIR / 'db.sqlite3',
+    #}
     'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myproject',
+        'USER': 'myprojectuser',
+        'PASSWORD': 'password',
+        'HOST': '54.152.214.237',
+        'PORT': '5432',  # Puerto por defecto de PostgreSQL
     }
 }
 

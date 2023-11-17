@@ -28,6 +28,17 @@ from django.contrib.auth import authenticate, login
 from django.views.generic.base import RedirectView
 from django.contrib import messages
 
+def eliminarCuenta(request):
+  return render(request, 'home/eliminar-cuenta.html')
+
+def terminosCondiciones(request):
+  return render(request, 'home/terminos-condiciones.html')
+
+   
+
+
+
+
 #Editar cuenta
 @login_required
 def editar_cuenta(request):
