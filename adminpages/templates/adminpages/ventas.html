@@ -33,10 +33,14 @@
                             maxlength="200">
                     </div>
                   </div>
-                  <div class="form-group">
-                    <input type="txt" id="txtServicio" name="txtServicio" class="form-control" placeholder="Servicio"
-                        maxlength="50">
-                  </div>
+                  <select id="txtServicio" name="txtServicio" class="form-control" >
+                    <option value="" selected disabled>Seleccionar servicio</option>  
+                    <!-- Aquí se generan las opciones desde el queryset -->
+                      {% for service in services %}
+                          <option value="{{ service.name }}">{{ service.name }}</option>
+                      {% endfor %}
+                  </select>
+                  <br>
                     <div class="form-group">
                       <input type="text" id="txtTelefono" name="txtTelefono" class="form-control" placeholder="Telefono"
                           maxlength="150">

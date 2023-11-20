@@ -27,10 +27,14 @@
                   <input type="text" id="txtApellido" name="txtApellido" value="{{venta.last_name}}" class="form-control" placeholder="Apellido"
                       maxlength="200" required>
                 </div>
-                <div class="form-group">
-                  <input type="text" id="txtServicio" name="txtServicio" value="{{venta.type_service}}" class="form-control" placeholder="Servicio"
-                      maxlength="150" required>
-                </div>
+                <select id="txtServicio" name="txtServicio" class="form-control" required>
+                  <option value="" selected disabled>Seleccionar servicio</option>  
+                  <!-- Aquí se generan las opciones desde el queryset -->
+                    {% for service in services %}
+                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
                 <div class="form-group">
                   <input type="tel" id="txtTelefono" name="txtTelefono" value="{{venta.phone}}" class="form-control" placeholder="Teléfono"
                        required>
@@ -50,4 +54,15 @@
         </div>
     </div>
 </div>
+<script>
+  $(document).ready(function() {
+      // Cuando cambia la opción de servicio
+      $('#txtServicio').on('change', function() {
+          // Obtén el precio de la opción seleccionada
+          var selectedPrice = $('option:selected', this).data('price');
+          // Actualiza el campo de total con el precio seleccionado
+          $('#numTotal').val(selectedPrice);
+      });
+  });
+</script>
 {% endblock %}

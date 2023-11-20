@@ -87,6 +87,7 @@
           <li class="item {% if view_name == 'ventas' %} selected{% endif %}"><a href="{% url 'ventas' %}">Ventas</a></li>
           <li class="item {% if view_name == 'estadisticas' %} selected{% endif %}"><a href="{% url 'estadisticas' %}">Estadisticas</a></li>            
           <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
+          <li class="item {% if view_name == 'servicios' %} selected{% endif %}"><a href="{% url 'servicios' %}">Servicios</a></li>
           <li class="item {% if view_name == 'editar-cuenta' %} selected{% endif %}"><a href="{% url 'editar-cuenta' %}">Mi Cuenta</a></li>
 
           {% endwith %}

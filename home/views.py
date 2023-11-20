@@ -374,6 +374,7 @@ def ServicioRegistrar(request):
     if not parse_total > 0:
       messages.error(request, "Cantidad debe de ser mayor o igual a 0")
       return redirect('home')
+    serviceObject = Service.objects.get(id=service)
     if Vehicle.objects.filter(plate=plate).exists():
        car = Vehicle.objects.get(plate=plate)
        #client = Client.objects.get(id=car.owner)
@@ -383,10 +384,10 @@ def ServicioRegistrar(request):
        print(car.owner.id)
        #print("Client")
        #print(client)
-       ticket = ServiceTicket.objects.create(client=car.owner, car=car, service=service, total=total, status="Terminado", paymethod="Efectivo")
+       ticket = ServiceTicket.objects.create(client=car.owner, car=car, service=serviceObject.name, total=total, status="Terminado", paymethod="Efectivo")
     
     servicio = ServicePage.objects.create(
-      first_name=name, last_name=last_name, phone=phone, type_service=service, plate_code=plate, price=total)
+      first_name=name, last_name=last_name, phone=phone, type_service=serviceObject.name, plate_code=plate, price=total)
     servicios = Service.objects.all()
     messages.success(request, 'Servicio registrado')
 

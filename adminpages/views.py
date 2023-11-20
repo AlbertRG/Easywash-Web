@@ -32,6 +32,75 @@ from django.utils.datastructures import MultiValueDictKeyError
 #class InventarioView(LoginRequiredMixin, TemplateView):
 #  template_name = 'adminpages/inventario.html'
 #  login_url = 'adminpages/inventario.html,'
+
+
+
+#ServiciosOfrecidos
+@login_required
+def ServiciosOfrecidos(request):
+  servicios = Service.objects.all()
+  return render(request, 'adminpages/serviciosOfrecidos.html', {'services':servicios})
+
+@login_required
+def ServiciosEditar(request,id):
+  servicio = Service.objects.get(id=id)
+  return render(request, 'adminpages/servicios.html', {'servicio':servicio})
+
+@login_required
+def serviciosEliminar(request,id):
+    servicio = Service.objects.get(id=id)
+    servicio.delete()
+    messages.success(request, 'Servicio eliminado')
+    return redirect('servicios')
+
+
+@login_required
+def ServiciosEdicion(request):
+  idtxt = request.POST.get('txtCodigo','')
+  nametxt = request.POST.get('txtNombre','')
+  pricetxt = request.POST.get('txtPrice','')
+  if nametxt == "" or pricetxt == "":
+    messages.error(request, "Completa todos los campos")
+    return redirect('servicios')
+  try:
+      parse_total = float(pricetxt)
+  except Exception as e:
+      messages.error(request, "Campo Total no es una entrada válida")
+      print(e)
+      return redirect('servicios')
+
+  if not parse_total > 0:
+      messages.error(request, "Cantidad debe de ser mayor a 0")
+      return redirect('servicios')
+  servicio = Service.objects.get(id=idtxt)
+  servicio.name = nametxt
+  servicio.price = pricetxt
+  servicio.save()
+  messages.success(request,"Servicio actualizado")
+  return redirect('servicios')
+
+@login_required
+def ServiciosAgregar(request):
+  nametxt = request.GET.get('txtServicio','')
+  preciotxt = request.GET.get('txtPrecio','')
+  if nametxt == "" or preciotxt == "":
+    messages.error(request,"Completa todos los campos")
+    return redirect('servicios')
+  try:
+      parse_total = float(preciotxt)
+  except Exception as e:
+      messages.error(request, "Campo Total no es una entrada válida")
+      print(e)
+      return redirect('servicios')
+
+  if not parse_total > 0:
+      messages.error(request, "Cantidad debe de ser mayor a 0")
+      return redirect('servicios')
+  servicio = Service.objects.create(name=nametxt.strip(),price=preciotxt.strip())
+  messages.success(request,"Servicio agregado")
+  return redirect('servicios')
+  
+
 #PDF
 #VENTAS
 @login_required 
@@ -581,13 +650,15 @@ def registrarDescuento(request):
 @login_required   
 def Ventas(request):
   ventasLista = ServicePage.objects.all()
-  return render(request,'adminpages/ventas.html',{'ventas': ventasLista})
+  services = Service.objects.all()
+  return render(request,'adminpages/ventas.html',{'ventas': ventasLista, 'services':services})
 
 
 @login_required 
 def VentasEdicion(request, id):
     venta = ServicePage.objects.get(id=id)
-    return render(request, "adminpages/ventas-edicion.html", {"venta": venta})
+    servicios = Service.objects.all()
+    return render(request, "adminpages/ventas-edicion.html", {"venta": venta,'services':servicios})
 @login_required 
 def VentaEliminar(request, id):
     venta = ServicePage.objects.get(id=id)
@@ -630,12 +701,12 @@ def VentasEditar(request):
     if not parse_total > 0:
       messages.error(request, "Cantidad debe de ser mayor o igual a 0")
       return redirect('edicionVentas/%s' % codigo)
-
+    service = Service.objects.get(id=servicio)
     venta = ServicePage.objects.get(id=codigo)
     venta.first_name = nombre
     venta.last_name = apellido
     venta.phone = tel
-    venta.type_service = servicio
+    venta.type_service = service.name
     venta.plate_code = placas
     venta.price = total
     venta.save()
@@ -650,9 +721,9 @@ def VentasBuscar(request):
   date2 = request.GET['txtdate2']
   phone = request.GET['txtTelefono']
   plate = request.GET['txtPlacas']
-  service = request.GET['txtServicio']
+  service = request.GET.get('txtServicio','')
   accion = request.GET['accion']
-
+  services = Service.objects.all()
   if accion == "buscar":
     if date1 == "" and date2 == "" and phone == "" and plate == "" and service == "":
       return redirect('ventas')
@@ -660,88 +731,88 @@ def VentasBuscar(request):
     if service != "":
       serviceQuery = ServicePage.objects.filter(type_service=service)
       messages.success(request, 'Ventas de '+service)
-      return render(request,'adminpages/ventas.html',{'ventas': serviceQuery})
+      return render(request,'adminpages/ventas.html',{'ventas': serviceQuery,'services':services})
     
-    if date2 == "" and phone == "" and plate == "" and service == "":
+    if date2 == "" and phone == "" and plate == "" and service == "" and date1 != "":
       ventasdate1 = ServicePage.objects.filter(service_date__gte=date1)
       messages.success(request, 'Ventas a partir de '+date1)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate1})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate1,'services':services})
     
-    if date1 == "" and date2 == "" and phone == "" and service == "":
+    if date1 == "" and date2 == "" and phone == "" and service == "" and plate!="":
       ventasdate6 = ServicePage.objects.filter(plate_code=plate)
       messages.success(request, 'Ventas de placa '+plate)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate6})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate6,'services':services})
     
     if date1 == "" and date2 == "" and plate == "" and service == "":
       ventasdate7 = ServicePage.objects.filter(phone=phone)
       messages.success(request, 'Ventas de numero '+phone)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate7})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate7,'services':services})
     
-    if date1 == "" and phone == "" and plate == "" and service == "":
+    if date1 == "" and phone == "" and plate == "" and service == "" and date2!="":
       ventasdate2 = ServicePage.objects.filter(service_date__lte=date2)
       messages.success(request, 'Ventas hasta '+date2)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate2})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate2,'services':services})
     
     if phone == "" and plate == "" and service == "":
       ventasdate3 = ServicePage.objects.filter(service_date__gte=date1,service_date__lte=date2)
       messages.success(request, 'Ventas desde '+date1 +" hasta "+date2)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate3})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate3,'services':services})
     
     if date1 == "" and phone == "" and service == "":
       ventasdate8 = ServicePage.objects.filter(service_date__lte=date2,plate_code=plate)
       messages.success(request, 'Ventas hasta '+date2)
       messages.success(request, 'Ventas de Placa '+plate)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate8})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate8,'services':services})
     
     
     if date1 == "" and plate == "" and service == "":
       ventasdate9 = ServicePage.objects.filter(service_date__lte=date2,phone=phone)
       messages.success(request, 'Ventas hasta '+date2)
       messages.success(request, 'Ventas de Teléfono '+phone)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate9})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate9,'services':services})
     
     if date1 == "" and date2 == "" and service == "":
       ventasdate9 = ServicePage.objects.filter(plate_code=plate,phone=phone)
       messages.success(request, 'Ventas de Placa '+plate)
       messages.success(request, 'Ventas de Teléfono '+phone)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate9})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate9,'services':services})
     
     if date2 == "" and phone == "" and service == "":
       ventasdate10 = ServicePage.objects.filter(plate_code=plate,service_date__gte=date1)
       messages.success(request, 'Ventas desde '+date1)
       messages.success(request, 'Ventas de Placa '+plate)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate10})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate10,'services':services})
     
     if date2 == "" and plate == "" and service == "":
       ventasdate10 = ServicePage.objects.filter(phone=phone,service_date__gte=date1)
       messages.success(request, 'Ventas desde '+date1)
       messages.success(request, 'Ventas de Teléfono '+phone)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate10})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate10,'services':services})
     
     if plate == "" and service == "":
       ventasdate4 = ServicePage.objects.filter(service_date__gte=date1,service_date__lte=date2,phone=phone)
       messages.success(request, 'Ventas desde '+date1 +" hasta "+date2)
       messages.success(request, 'Ventas de teléfono '+phone)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate4})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate4,'services':services})
     
     if phone=="" and service == "":
       ventasdate5 = ServicePage.objects.filter(service_date__gte=date1,service_date__lte=date2,plate_code=plate)
       messages.success(request, 'Ventas desde '+date1 +" hasta "+date2)
       messages.success(request, 'Ventas de placa '+plate)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate5})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate5,'services':services})
     
     if date1 == "" and service == "":
       ventasdate11 = ServicePage.objects.filter(plate_code=plate,service_date__lte=date2,phone=phone)
       messages.success(request, 'Ventas hasta '+date2)
       messages.success(request, 'Ventas de teléfono '+phone)
       messages.success(request, 'Ventas de placa '+plate)
-      return render(request,'adminpages/ventas.html',{'ventas': ventasdate11})
+      return render(request,'adminpages/ventas.html',{'ventas': ventasdate11,'services':services})
     
     ventasdate12 = ServicePage.objects.filter(service_date__gte=date1,plate_code=plate,service_date__lte=date2,phone=phone)
     messages.success(request, 'Ventas desde '+date1 +" hasta "+date2)
     messages.success(request, 'Ventas de teléfono '+phone)
     messages.success(request, 'Ventas de placa '+plate)
-    return render(request,'adminpages/ventas.html',{'ventas': ventasdate12})
+    return render(request,'adminpages/ventas.html',{'ventas': ventasdate12,'services':services})
   elif accion == "descargar" or accion == "enviar":
     date1 = request.GET.get('txtdate1')
     date2 = request.GET.get('txtdate2')

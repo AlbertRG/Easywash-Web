@@ -21,8 +21,12 @@ urlpatterns = [
   path('descuento/<id>',views.ClientesDescuento, name='descuento'),
   path('registrarDescuento',views.registrarDescuento, name='registrarDescuento'),
   path('buscarClientDescuento',views.buscarClient,name='buscarClientDescuento'),
-
-
+  path('servicios',views.ServiciosOfrecidos,name='servicios'),
+  path('serviciosEditar/<id>',views.ServiciosEditar,name='serviciosEditar'),
+  path('serviciosEliminar/<id>',views.serviciosEliminar,name='serviciosEliminar'),
+  path('serviciosEdicion',views.ServiciosEdicion,name='serviciosEdicion'),
+  path('serviciosEdicion',views.ServiciosEdicion,name='serviciosEdicion'),
+  path('ServiciosAgregar',views.ServiciosAgregar,name='ServiciosAgregar'),
 
 
 ]
