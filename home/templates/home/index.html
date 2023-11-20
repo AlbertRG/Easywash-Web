@@ -2,8 +2,12 @@
 {% block title %} - Registrar Servicio {% endblock %}
 {% block content %}
 <br/><br/>
+
 <div class="row">
   <div class="col-md-4 offset-md-4">
+    
+      <div class="registration_form">
+        <div id="messageArea"></div>
     {% if messages %}
       {% for message in messages %}
       <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
@@ -12,7 +16,6 @@
       </div>
       {% endfor %}
     {% endif %}
-      <div class="registration_form">
           <div class="card-body">
             <div class="title">Registrar Servicio </div><br>
 
@@ -27,20 +30,29 @@
                   <input type="text" id="txtApellido" name="txtApellido" class="form-control" placeholder="Apellido"
                       maxlength="200" required>
                 </div>
-                <div class="form-group">
-                  <input type="text" id="txtServicio" name="txtServicio" class="form-control" placeholder="Servicio"
-                      maxlength="150" required>
-                </div>
+                
+                <label for="txtServicio" style="color: white;">Servicio</label>
+                <select id="txtServicio" name="txtServicio" class="form-control" required>
+                  <option value="" selected disabled>Seleccionar servicio</option>  
+                  <!-- Aquí se generan las opciones desde el queryset -->
+                    {% for service in services %}
+                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
                 <div class="form-group">
                   <input type="tel" id="txtTelefono" name="txtTelefono" class="form-control" placeholder="Teléfono"
                        required>
                 </div>
+                <div class="input-group">
+                  <input type="text" id="txtPlacas" name="txtPlacas" required pattern="[A-Z]{3}\d{3,4}" class="form-control" placeholder="Placas" maxlength="7" required>
+                  <div class="input-group-append">
+                      <button type="button" class="btn btn-primary" onclick="buscarCliente()">Buscar</button>
+                  </div>
+               </div>
+               <br>
                 <div class="form-group">
-                  <input type="text" id="txtPlacas" name="txtPlacas" required pattern="[A-Z]{3}\d{3,4}"  class="form-control" placeholder="Placas"
-                      maxlength="7" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="numTotal" pattern="^\d*(\.\d{0,2})?$" name="numTotal" class="form-control" placeholder="Total" min="1" required>
+                    <input type="number" id="numTotal" pattern="^\d*(\.\d{0,2})?$" name="numTotal" class="form-control" placeholder="Total" min="1" required readonly>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
@@ -50,4 +62,20 @@
       </div>
   </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Cuando cambia la opción de servicio
+        $('#txtServicio').on('change', function() {
+            // Obtén el precio de la opción seleccionada
+            var selectedPrice = $('option:selected', this).data('price');
+            // Actualiza el campo de total con el precio seleccionado
+            $('#numTotal').val(selectedPrice);
+        });
+    });
+</script>
+
+
+
+
 {% endblock %}

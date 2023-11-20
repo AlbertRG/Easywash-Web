@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %} - Registrar Servicio {% endblock %}
+{% block content %}
+<br/><br/>
+
+<div class="row">
+  <div class="col-md-4 offset-md-4">
+    
+      <div class="registration_form">
+        <div id="messageArea"></div>
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <strong class="text-dark">{{ message }}</strong>
+      </div>
+      {% endfor %}
+    {% endif %}
+          <div class="card-body">
+            <div class="title">Registrar Servicio con Descuento </div><br>
+
+              <form action="/org/registrarDescuento" method="POST">{% csrf_token %}
+                <input type="hidden" id="txtCodigo" name="txtCodigo" class="form-control" placeholder="SKU">
+
+                <div class="form-group">
+                    <input type="text" id="txtNombre" name="txtNombre" class="form-control" placeholder="Nombre"
+                        maxlength="200" required readonly value="{{cliente.first_name}}">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="txtApellido" name="txtApellido" class="form-control" placeholder="Apellido"
+                      maxlength="200" required readonly value="{{cliente.last_name}}">
+                </div>
+                
+                <label for="txtServicio" style="color: white;">Servicio</label>
+                <select id="txtServicio" name="txtServicio" class="form-control" required>
+                  <option value="" selected disabled>Seleccionar servicio</option>  
+                  <!-- Aquí se generan las opciones desde el queryset -->
+                    {% for service in services %}
+                        <option value="{{ service.id }}" data-price="{{ service.price }}">{{ service.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <div class="form-group">
+                  <input type="tel" id="txtTelefono" name="txtTelefono" class="form-control" placeholder="Teléfono"
+                       requreired readonly value="{{cliente.phone}}">
+                </div>
+                <label for="txtPlacas" style="color: white;">Placas</label>
+                <select id="txtPlacas" name="txtPlacas" class="form-control" required>
+                  <option value="" selected disabled>Seleccionar placa</option>  
+                  <!-- Aquí se generan las opciones desde el queryset -->
+                    {% for car in cars %}
+                        <option value="{{ car.id }}">{{ car.plate }} {{ car.model }}</option>
+                    {% endfor %}
+                </select>
+               <br>
+                <div class="form-group">
+                    <input type="number" id="numTotal" pattern="^\d*(\.\d{0,2})?$" name="numTotal" class="form-control" placeholder="Total" min="1" required readonly>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
+                </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Cuando cambia la opción de servicio
+        $('#txtServicio').on('change', function() {
+            // Obtén el precio de la opción seleccionada
+            var selectedPrice = $('option:selected', this).data('price');
+            selectedPrice *= 0.75
+            // Actualiza el campo de total con el precio seleccionado
+            $('#numTotal').val(selectedPrice);
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}

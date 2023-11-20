@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7 ]> <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
+  <head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="googlebot" content="index,follow">
+
+    <!-- Title -->
+    <title>Easy Wash &mdash; Android App</title>
+
+    <!-- Templates core CSS -->
+    <link href="{% static 'css/application.css'%}" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link href="{% static 'Images/favicon/favicon.ico'%}" rel="shortcut icon">
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Modernizr Scripts -->
+    <script src="javascript/vendor/modernizr-2.7.1.min.js"></script>
+  </head>
+  <body class="index" id="to-top">
+
+    <!-- Jumbotron -->
+    <header class="jumbotron" role="banner">
+
+      <div class="container">
+
+        <div class="row">
+
+          <div class="col-md-7">
+
+            <!-- Logo -->
+            <figure class="text-center">
+                <img class="img-logo" src="{% static 'Images/logo1.png'%}" alt="">
+            </figure> <!-- /.text-center -->
+
+            <!-- Title -->
+            <h1>Easy Wash App</h1>
+
+            <!-- Sub title -->
+            <p>Descarga nuestra App para disfrutar de descuentos y tener seguimiento de tus visitas a H2O Autolavado</p>
+            <!-- Button -->
+            <p class="btn-app-store">
+              <a class="btn btn-danger btn-lg" href="{% static 'app/EasyWash.apk' %}" download>
+                <img src="{% static 'Images/btn-app-store.jpg'%}" alt="">
+              </a>
+            </p> <!-- /.btn-app-store -->
+
+          </div> <!-- /.col-md-7 -->
+
+          <div class="col-md-5">
+
+            <!-- Images showcase -->
+            <figure>
+              <img class="img-iPhone" src="{% static 'Images/iphone/phone1.png'%}" alt="">
+            </figure>
+
+          </div> <!-- /.col-md-5 -->
+          
+        </div> <!-- /.row -->
+        
+      </div> <!-- /.container -->
+
+    </header> <!-- /.jumbotron -->
+
+
+
+
+
+
+
+
+    <!-- Footer -->
+    <footer class="footer-section text-center" role="contentinfo">
+
+      <div class="container">
+
+        <div class="row">
+
+
+          <div class="col-md-4 col-footer col-padding">
+            
+            <!-- Footer 1 -->
+            <section class="text-center">
+              <p>Asegurate de leer los <a href="https://h2oautolavado.com/terms">Términos y Condiciones</a>.</p>
+            </section>
+
+          </div> <!-- /.col-md-4 -->
+
+          <div class="col-md-4 col-footer">
+            
+            <!-- Footer 1 -->
+            <section  class="text-center">
+              <p><strong>H2O Autolavado</strong> <br>Av Valle de Atemajac 2316, Jardines del Valle, 45138 Zapopan, Jal.</p>
+            </section>
+
+          </div> <!-- /.col-md-4 -->
+          
+        </div> <!-- /.row -->
+
+      </div> <!-- /.container -->
+
+    </footer> <!-- /.footer-section -->
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="javascript/vendor/jquery-2.1.0.min.js"></script>
+    <script src="javascript/bootstrap.min.js"></script>
+    <script src="javascript/assets/application.js"></script>
+  </body>
+</html>

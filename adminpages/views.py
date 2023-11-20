@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin #for classes
 from django.contrib.auth.decorators import login_required
-from .models import Inventory, ServicePage
+from .models import Inventory, ServicePage, Client, Vehicle, Service, ServiceTicket
 from django.contrib import messages
 from datetime import date
 from dateutil import parser
 import re
 from django.core.paginator import Paginator
-from django.db import models
+from django.db import models, transaction
 import pandas as pd
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import ExtractHour, ExtractWeekDay
 from django.db.models import F, Func, IntegerField
 from django.template.loader import get_template
@@ -25,6 +25,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+from django.utils.datastructures import MultiValueDictKeyError
 
 # Create your views here.
 #Inventario
@@ -402,6 +403,180 @@ def InventarioEliminar(request, sku):
     curso.delete()
     messages.success(request, '¡Producto eliminado!')
     return redirect('inventario')
+
+
+#Descuento Clientes
+@login_required   
+def Clientes(request):
+  clients = Client.objects.annotate(num_tickets=Count('serviceticket', filter=Q(serviceticket__status="Terminado"))).filter(num_tickets__gte=5)
+  for client in clients:
+    print(f"{client.first_name} {client.last_name} tiene {client.num_tickets} tickets terminados.")
+  print(clients)
+  return render(request,'adminpages/clientes.html',{'clientes': clients})
+
+@login_required
+def buscarClient(request):
+  correo = request.GET.get('txtCorreo','')
+  telefono = request.GET.get('txtTelefono','')
+  placas = request.GET.get('txtPlacas','')
+  #Todos VACIOS
+  if correo == "" and telefono == "" and placas == "":
+      clients = Client.objects.annotate(num_tickets=Count('serviceticket', filter=Q(serviceticket__status="Terminado"))).filter(num_tickets__gte=5)
+      return render(request,'adminpages/clientes.html',{'clientes': clients})
+  #TODOS LLENO
+  if correo != "" and telefono != "" and placas != "":
+    try:
+      cliente = Client.objects.get(phone=telefono.strip(),email=correo.strip())
+      carros = Vehicle.objects.get(plate=placas.strip(),owner=cliente)
+    except (Vehicle.DoesNotExist, Client.DoesNotExist):
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if carros is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      clientes = Client.objects.filter(phone=telefono.strip())
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  #TELEFONO Y PLACAS
+  if correo == "" and telefono != "" and placas != "":
+    try:
+      cliente = Client.objects.get(phone=telefono.strip())
+      carros = Vehicle.objects.get(plate=placas.strip(),owner=cliente)
+    except (Vehicle.DoesNotExist, Client.DoesNotExist):
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if carros is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      clientes = Client.objects.filter(phone=telefono.strip())
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  
+  #Correo y telefono
+  if correo != "" and telefono != "" and placas == "":
+    try:
+      clientes = Client.objects.filter(email=correo.strip(),phone=telefono.strip())
+      cliente = Client.objects.get(email=correo.strip(),phone=telefono.strip())
+    except Client.DoesNotExist:
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if clientes is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  #Correo y placas
+  if correo != "" and telefono == "" and placas != "":
+    try:
+      cliente = Client.objects.get(email=correo.strip())
+      carros = Vehicle.objects.get(plate=placas.strip(),owner=cliente)
+    except (Vehicle.DoesNotExist, Client.DoesNotExist):
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if carros is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      clientes = Client.objects.filter(email=correo.strip())
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  #Correo
+  if correo != "" and telefono == "" and placas == "":
+    try:
+      clientes = Client.objects.filter(email=correo.strip())
+      cliente = Client.objects.get(email=correo.strip())
+    except Client.DoesNotExist:
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if clientes is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  #Telefono 
+  if correo == "" and telefono != "" and placas == "":
+    try:
+      clientes = Client.objects.filter(phone=telefono.strip())
+      cliente = Client.objects.get(phone=telefono.strip())
+    except Client.DoesNotExist:
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if clientes is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  #Placas 
+  if correo == "" and telefono == "" and placas != "":
+    try:
+      carros = Vehicle.objects.filter(plate=placas.strip())
+      cliente = Vehicle.objects.get(plate=placas.strip())
+    except Vehicle.DoesNotExist:
+      messages.success(request,'Cliente no encontrado')
+      return redirect('buscarClientDescuento')
+    if carros is None:
+      messages.error(request,'Cliente no encontrado')
+    elif ServiceTicket.objects.filter(client=cliente.owner, status="Terminado").count() >= 5:
+      messages.success(request,'Cliente encontrado')
+      clientes = Client.objects.filter(id=cliente.owner.id)
+      return render(request,'adminpages/clientes.html',{'clientes': clientes})
+  
+  clients = Client.objects.annotate(num_tickets=Count('serviceticket', filter=Q(serviceticket__status="Terminado"))).filter(num_tickets__gte=5)
+  return render(request,'adminpages/clientes.html',{'clientes': clientes})
+    
+@login_required   
+def ClientesDescuento(request, id):
+  cliente = Client.objects.get(id=id)
+  vehicles = Vehicle.objects.filter(owner=cliente)
+  services = Service.objects.all()
+  return render(request,'adminpages/descuento.html',{'services':services,'cliente': cliente, 'cars':vehicles})
+
+@login_required
+def registrarDescuento(request):
+  try:
+    phoneText = request.POST['txtTelefono']
+    client = Client.objects.get(phone=phoneText)
+    nameText = request.POST['txtNombre']
+    last_nameText = request.POST['txtApellido']
+    serviceText = request.POST['txtServicio']
+    plateText = request.POST['txtPlacas']
+    totalText = request.POST['numTotal']
+    
+    if nameText == "" or last_nameText == "" or serviceText == "" or phoneText == "" or plateText == "" or totalText=="":
+        messages.error(request, "Completa todos los campos")
+        return ('registrarDescuento')
+    serviceObject = Service.objects.get(id=serviceText)
+    carObject = Vehicle.objects.get(id=plateText)
+    print("name")
+    print(nameText)
+    print("last_name")
+    print(last_nameText)
+    print("phone")  
+    print(phoneText)
+    print("service")
+    print(serviceObject.name)
+    print("plate")
+    print(carObject.plate)
+    print("total")
+    print(totalText)
+  except MultiValueDictKeyError:
+      messages.error(request, "Completa todos los campos")
+      return redirect('descuento/%s' % client.id)
+  if ServiceTicket.objects.filter(client=client, status="Terminado").count() >= 5:
+      tickets_terminados = ServiceTicket.objects.filter(client=client, status="Terminado")[:5]
+      with transaction.atomic():
+          for ticket in tickets_terminados:
+            ticket.status = "Canjeado"
+            ticket.save()
+        # Agregar un mensaje de éxito a tu sistema de mensajes
+
+  ticketQuery = ServiceTicket.objects.create(client=client,car=carObject,service="Paquete {}".format(serviceObject.id),total=totalText,status="Canjeado",paymethod="Efectivo")
+  servicePage = ServicePage.objects.create(
+      first_name=nameText, last_name=last_nameText, phone=phoneText, type_service=serviceObject.name+" Descuento", plate_code=carObject.plate, price=totalText)
+  messages.success(request, 'Se ha canjeado el descuento para el cliente {}'.format(client.first_name))  
+  return redirect('clients')
+
+
+  
 #Ventas
 @login_required   
 def Ventas(request):
@@ -417,7 +592,7 @@ def VentasEdicion(request, id):
 def VentaEliminar(request, id):
     venta = ServicePage.objects.get(id=id)
     venta.delete()
-    messages.success(request, 'Venta eliminado!')
+    messages.success(request, 'Venta eliminada')
     return redirect('ventas')
 
 @login_required 
@@ -430,12 +605,11 @@ def VentasEditar(request):
     placas = request.POST['txtPlacas']
     total = request.POST['numTotal']
 
-    #Validaciones
+    #Validaciones 
     if nombre == "" or apellido == "" or servicio == "" or tel == "" or placas == "" or total=="":
       messages.error(request, "Completa todos los campos")
       return redirect('edicionVentas/%s' % codigo)
 
-    
     if not validar_placa_mexicana(placas):
       messages.error(request, "Placa de carro no válida")
       return redirect('edicionVentas/%s' % codigo)
@@ -696,11 +870,11 @@ def VentasBuscar(request):
       messages.success(request,"Correo enviado")
       return render(request,'adminpages/ventas.html',{'ventas':products})
     return response
-@login_required  
+  
 def validar_string(string):
     # Elimina espacios en blanco y luego verifica si la longitud es 10 y si todos los caracteres son dígitos
     return len(string.strip()) == 10 and string.isdigit()
-@login_required 
+ 
 def validar_placa_mexicana(placa):
     # Define una expresión regular que coincida con el formato de placas de México
     patron = r'^[A-Z]{3}\d{3,4}$'

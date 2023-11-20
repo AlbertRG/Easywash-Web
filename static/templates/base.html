@@ -23,6 +23,11 @@
       href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap"
       rel="stylesheet"
     />
+    <!-- Favicons -->
+    <link href="{% static 'Images/favicon/favicon.ico'%}" rel="shortcut icon">
+    <link href="{% static 'Images/favicon/apple-touch-icon-57-precomposed.ico'%}" rel="apple-touch-icon">
+    <link href="{% static 'Images/favicon/apple-touch-icon-72-precomposed.ico'%}" rel="apple-touch-icon" sizes="72x72">
+    <link href="{% static 'Images/favicon/apple-touch-icon-144-precomposed.ico'%}" rel="apple-touch-icon" sizes="114x114">
 
     <style>
       /* Estilo base para los elementos <li> */
@@ -52,11 +57,7 @@
           background: #9597a6;
         }
     </style>
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-      integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
     <script>
       $(function () {
         $(".toggle").on("click", function () {
@@ -82,6 +83,7 @@
           {% with request.resolver_match.view_name as view_name %}
           <li class="logo "><a href="{% url 'home' %}">H2O Detallado Automotriz</a></li>
           <li class="item {% if view_name == 'home' %} selected{% endif %}"><a href="{% url 'home' %}">Inicio</a></li>
+          <li class="item {% if view_name == 'clients' %} selected{% endif %}"><a href="{% url 'clients' %}">Descuentos</a></li>
           <li class="item {% if view_name == 'ventas' %} selected{% endif %}"><a href="{% url 'ventas' %}">Ventas</a></li>
           <li class="item {% if view_name == 'estadisticas' %} selected{% endif %}"><a href="{% url 'estadisticas' %}">Estadisticas</a></li>            
           <li class="item {% if view_name == 'inventario' %} selected{% endif %}"><a href="{% url 'inventario' %}">Inventario</a></li>
@@ -115,9 +117,6 @@
         </div>
       </a>
     </footer>-->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
     </script>
@@ -128,4 +127,44 @@
   </body>
   <!-- TODO: Aprender HTML-->
   <!-- <p>Enlace <a href="https://google.com" target="_blank" rel="noopener noreferrer">CLICK</a></p> -->
-</html>
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+  var j = jQuery.noConflict();
+</script>
+  <script>
+    function buscarCliente() {
+      var placas = document.getElementById('txtPlacas').value;
+  
+      // Realizar la llamada AJAX a la vista de búsqueda del cliente
+      j.ajax({
+          type: 'GET',
+          url: '/buscar_cliente/',
+          data: {placas: placas},
+          dataType: 'json',
+          success: function(response) {
+              showMessage('success', response.message);
+              // Completa los campos con la información del cliente
+              $('#txtNombre').val(response.data.nombre);
+              $('#txtApellido').val(response.data.apellido);
+              $('#txtTelefono').val(response.data.telefono);
+              // ... completa otros campos según sea necesario
+          },
+          error: function(error) {
+              showMessage('error', error.responseJSON.message);
+              console.log('Error al buscar el cliente:', error);
+          }
+      });
+  }
+  function showMessage(type, text) {
+    // Muestra el mensaje en el área correspondiente
+    var alertClass = (type === 'success') ? 'alert-success' : 'alert-warning';
+    var message = '<div class="alert alert-dismissible ' + alertClass + '">' +
+                  '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                  '<strong class="text-dark">' + text + '</strong>' +
+                  '</div>';
+    $('#messageArea').html(message);
+}
+  </script>
+  </html>
+

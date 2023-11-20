@@ -17,5 +17,12 @@ urlpatterns = [
   path('eliminarVenta/<id>',views.VentaEliminar, name='eliminar-venta'),
   path('sales_PDF',views.sales_PDF, name='sales_PDF'),
   path('pdf_report',views.pdf_report_create, name='pdf_report'),
+  path('clients',views.Clientes, name='clients'),
+  path('descuento/<id>',views.ClientesDescuento, name='descuento'),
+  path('registrarDescuento',views.registrarDescuento, name='registrarDescuento'),
+  path('buscarClientDescuento',views.buscarClient,name='buscarClientDescuento'),
+
+
+
 
 ]

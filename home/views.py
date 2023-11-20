@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.utils import timezone
 import pytz
+from django import forms
 from cryptography.fernet import Fernet
 # Create your views here.
 from django.shortcuts import render
@@ -17,7 +18,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import *
-from adminpages.models import ServicePage
+from adminpages.models import ServicePage, ServiceTicket, Vehicle, Client, Service
 from .helpers import send_forget_password_mail
 import re
 #2af
@@ -27,7 +28,8 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
 from django.views.generic.base import RedirectView
 from django.contrib import messages
-
+from django.http import JsonResponse
+from django.contrib.staticfiles import finders
 def eliminarCuenta(request):
   return render(request, 'home/eliminar-cuenta.html')
 
@@ -186,11 +188,11 @@ def Register(request):
 
         try:
             if User.objects.filter(username = username).first():
-                messages.success(request, 'Username is taken.')
+                messages.success(request, 'Nombre de Usuario ya tomado.')
                 return redirect('register')
 
             if User.objects.filter(email = email).first():
-                messages.success(request, 'Email is taken.')
+                messages.success(request, 'Email ya tomado.')
                 return redirect('register')
             
             user_obj = User(username = username , email = email)
@@ -305,13 +307,40 @@ def validar_contrasena(contrasena, usuario):
         return True
     else:
         return False
-      
+#Buscar Cliente
+@login_required
+def buscar_cliente(request):
+    placas = request.GET.get('placas', None)
+
+    if placas:
+        try:
+            # Buscar el cliente por las placas en la base de datos
+            car = Vehicle.objects.get(plate=placas)
+            # Devolver la información del cliente en formato JSON
+            cliente_data = {
+                'nombre': car.owner.first_name,
+                'apellido': car.owner.last_name,
+                'telefono': car.owner.phone,
+            }
+            return JsonResponse({'success': True, 'data': cliente_data, 'message': 'Cliente encontrado exitosamente'})
+        except Vehicle.DoesNotExist:
+            # Si no se encuentra el cliente, devolver un error
+            return JsonResponse({'success': False, 'message': 'Cliente no encontrado'}, status=404)
+    else:
+        # Si no se proporcionan placas, devolver un error
+        return JsonResponse({'success': False, 'message': 'Proporciona las placas'}, status=400)
+
+
+
   #Inventario
 @login_required  
 def Servicio(request):
  # messages.success(request, 'Inventario listado')
-  return render(request,'home/index.html')
-  
+  queryset=Service.objects.all()
+  print(queryset)
+  return render(request,'home/index.html', {'services': queryset})
+
+   
 @login_required  
 def ServicioRegistrar(request):
     name = request.POST['txtNombre']
@@ -345,25 +374,34 @@ def ServicioRegistrar(request):
     if not parse_total > 0:
       messages.error(request, "Cantidad debe de ser mayor o igual a 0")
       return redirect('home')
+    if Vehicle.objects.filter(plate=plate).exists():
+       car = Vehicle.objects.get(plate=plate)
+       #client = Client.objects.get(id=car.owner)
+       print("CAR")
+       print(car.brand)
+       print("ID")
+       print(car.owner.id)
+       #print("Client")
+       #print(client)
+       ticket = ServiceTicket.objects.create(client=car.owner, car=car, service=service, total=total, status="Terminado", paymethod="Efectivo")
     
+    servicio = ServicePage.objects.create(
+      first_name=name, last_name=last_name, phone=phone, type_service=service, plate_code=plate, price=total)
+    servicios = Service.objects.all()
+    messages.success(request, 'Servicio registrado')
 
-    try:
-      key = Fernet.generate_key()
-      fernet = Fernet(key)
-      encrypted_name = fernet.encrypt(name.encode())
-      encrypted_last_name = fernet.encrypt(last_name.encode())
-      encrypted_phone= fernet.encrypt(phone.encode())
-      encrypted_service = fernet.encrypt(service.encode())
-      encrypted_plate = fernet.encrypt(plate.encode())
-      encrypted_total = fernet.encrypt(total.encode())
+    return render(request,'home/index.html',{'services':servicios})
 
-      servicio = ServicePage.objects.create(
-      first_name=encrypted_name, last_name=encrypted_last_name, phone=encrypted_phone, type_service=encrypted_service, plate_code=encrypted_plate, price=total)
-      messages.success(request, 'Servicio registrado!')
-      print("DOOOOOOOOOOOOOOOOOOONEEEEEEEEE")
-    except Exception as e:
-      print(e)  
-    return redirect('home')
+#DESCARGAR APP
+def nuestraApp(request):
+   return render(request,'home/downloadApp.html')
+
+def descargarApp(request):
+  archivo_path = finders.find('EasyWash.apk')
+  with open(archivo_path, 'rb') as archivo:
+        response = HttpResponse(archivo.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="EasyWash.apk"'
+        return response
 
 def validar_string(string):
     # Elimina espacios en blanco y luego verifica si la longitud es 10 y si todos los caracteres son dígitos

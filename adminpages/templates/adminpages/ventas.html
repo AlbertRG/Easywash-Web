@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} - Inventario {% endblock %}
+{% block title %} - Ventas {% endblock %}
 
 {% block content %}
 <style>
@@ -19,7 +19,7 @@
         {% endif %}
         <div class="wrapper">
             <div class="registration_form">
-              <div class="title">Gestión de Inventario</div>
+              <div class="title">Buscar Ventas</div>
                 <form class="form-group mt-5" action="buscarVenta" method="GET">
                   <div class="mt-4">
                     <div class="form-group">
@@ -64,14 +64,14 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Placas</th>
-                        <th>Nombre</th>
-                        <th>Telefono</th>
-                        <th>Servicio</th>
-                        <th>Total</th>
-                        <th>Fecha</th>
-                        <th colspan="2">Opciones</th>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Placas</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Teléfono</th>
+                        <th class="text-center">Servicio</th>
+                        <th class="text-center">Total</th>
+                        <th class="text-center">Fecha</th>
+                        <th colspan="2" class="text-center">Opciones</th>
                     </tr>
                 </thead>
                 <tbody>

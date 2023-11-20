@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} - Descuentos {% endblock %}
+
+{% block content %}
+<style>
+  label {
+    color: white;
+  }
+</style>
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible {% if message.tags == 'error' %} alert-warning {% else %} alert-success {% endif %}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong class="text-dark">{{ message }}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="wrapper">
+            <div class="registration_form">
+              <div class="title">Buscar Cliente</div>
+                <form class="form-group mt-5" action="buscarClientDescuento" method="GET">
+                  <div class="mt-4">
+                  </div>
+                  <div class="form-group">
+                    <input type="txt" id="txtCorreo" name="txtCorreo" class="form-control" placeholder="Correo"
+                        maxlength="50">
+                  </div>
+                    <div class="form-group">
+                      <input type="text" id="txtTelefono" name="txtTelefono" class="form-control" placeholder="Telefono"
+                          maxlength="150">
+                    </div>
+                    <div class="form-group">
+                      <input type="txt" id="txtPlacas" name="txtPlacas" class="form-control" placeholder="Placas"
+                          maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="accion" value="buscar" class="btn btn-success btn-block text-white">Buscar</button>
+                    </div>
+        
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+        <h1>Descuento a Cliente</h1>
+        <div class="table-responsive py-2">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th  class="text-center">#</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Telefono</th>
+                        <th class="text-center">Email</th>
+                        <th colspan="2" class="text-center">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in clientes %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.first_name}} {{i.last_name}}</td>
+                        <td>{{i.phone}}</td>
+                        <td>{{i.email}}</td>
+                        <td><a href="descuento/{{i.id}}" class="btn btn-info">Aplicar Descuento</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+       
+      
+    </div>
+</div>
+{% endblock %}

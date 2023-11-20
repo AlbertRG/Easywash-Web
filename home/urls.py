@@ -14,4 +14,7 @@ urlpatterns = [
     path('editar-cuenta', views.editar_cuenta, name='editar-cuenta'),
     path('eliminar-cuenta', views.eliminarCuenta, name='eliminar-cuenta'),
     path('terms', views.terminosCondiciones, name='terms'),
+    path('buscar_cliente/',views.buscar_cliente,name="buscar_cliente"),
+    path('easywashapp',views.nuestraApp,name="easywashapp"),
+    path('descargar-app',views.descargarApp,name="descargar-app")
 ]
